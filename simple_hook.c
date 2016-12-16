@@ -208,13 +208,13 @@ int Hook(void* target, void* replacement, void** func_ptr) {
     	// TODO: This could still fail for disp8 and disp16. Need to check out other hooking libs.
         len += hde32_disasm((void*)((uint32_t)trmp + len), &hde);
         if (IS_RELATIVE8(hde)) {
-        	*(uint8_t*)((uint32_t)trmp + len - 1) -= (uint32_t)trmp - (uint32_t)target;
+//        	*(uint8_t*)((uint32_t)trmp + len - 1) -= (uint32_t)trmp - (uint32_t)target;
         }
         else if (IS_RELATIVE16(hde)) {
-        	*(uint16_t*)((uint32_t)trmp + len - 2) -= (uint32_t)trmp - (uint32_t)target;
+//        	*(uint16_t*)((uint32_t)trmp + len - 2) -= (uint32_t)trmp - (uint32_t)target;
         }
         else if (IS_RELATIVE32(hde)) {
-        	*(uint32_t*)((uint32_t)trmp + len - 4) -= (uint32_t)trmp - (uint32_t)target;
+//        	*(uint32_t*)((uint32_t)trmp + len - 4) -= (uint32_t)trmp - (uint32_t)target;
         }
     }
 
