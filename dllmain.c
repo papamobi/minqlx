@@ -330,6 +330,7 @@ void SearchVmFunctions(void) {
 		failed = 1;
 	}
 	else DebugPrint("LaunchItem: %p\n", LaunchItem);
+*/
 
 	Drop_Item = (Drop_Item_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
 			0xB0000, PTRN_DROP_ITEM, MASK_DROP_ITEM);
@@ -339,6 +340,7 @@ void SearchVmFunctions(void) {
 	}
 	else DebugPrint("Drop_Item: %p\n", Drop_Item);
 
+/*
 	G_StartKamikaze = (G_StartKamikaze_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
 			0xB0000, PTRN_G_STARTKAMIKAZE, MASK_G_STARTKAMIKAZE);
 	if (G_StartKamikaze == NULL) {
@@ -355,7 +357,7 @@ void SearchVmFunctions(void) {
 	}
 	else DebugPrint("G_FreeEntity: %p\n", G_FreeEntity);
 
-	//bg_itemlist = qagame + 0x2CB8A0;
+	*/ bg_itemlist = qagame + 0xCD0C0; /*
 	bg_itemlist = (gitem_t*)PatternSearch((void*)((pint)qagame + 0x2CB000),
 			0xB0000, PTRN_BG_ITEMLIST, MASK_BG_ITEMLIST);
 	if (bg_itemlist == NULL) {
@@ -416,7 +418,8 @@ void InitializeVm(void) {
     g_entities = (gentity_t*)(*(int32_t*)OFFSET_RELP_G_ENTITIES + OFFSET_RELP_G_ENTITIES + 4);
     level = (level_locals_t*)(*(int32_t*)OFFSET_RELP_LEVEL + OFFSET_RELP_LEVEL + 4);
 #elif defined(__i386) || defined(_M_IX86)
-    g_entities = (gentity_t*)(*(int32_t*)OFFSET_RELP_G_ENTITIES + 0xCAFF4 + (pint)qagame);
+    //g_entities = (gentity_t*)(*(int32_t*)OFFSET_RELP_G_ENTITIES + 0xCAFF4 + (pint)qagame);
+    g_entities = (gentity_t*)(qagame + 0x4FDC60);
 #endif
 }
 
