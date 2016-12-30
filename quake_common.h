@@ -1140,7 +1140,7 @@ typedef struct gitem_s {
 
 struct gclient_s;
 
-struct __attribute__((aligned(8))) gentity_s {
+struct gentity_s {
   entityState_t s;
   entityShared_t r;
   struct gclient_s *client;
