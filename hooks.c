@@ -320,13 +320,11 @@ void HookVm(void) {
 		failed = 1;
 	}
 
-/*
     res = Hook((void*)G_StartKamikaze, My_G_StartKamikaze, (void*)&G_StartKamikaze);
     if (res) {
         DebugPrint("ERROR: Failed to hook G_StartKamikaze: %d\n", res);
         failed = 1;
     }
-*/
 
     res = Hook((void*)ClientSpawn, My_ClientSpawn, (void*)&ClientSpawn);
     if (res) {

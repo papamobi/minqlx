@@ -306,7 +306,6 @@ void SearchVmFunctions(void) {
 	}
 	else DebugPrint("ClientSpawn: %p\n", ClientSpawn);
 
-/*
 	G_Damage = (G_Damage_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
 			0xB0000, PTRN_G_DAMAGE, MASK_G_DAMAGE);
 	if (G_Damage == NULL) {
@@ -330,7 +329,6 @@ void SearchVmFunctions(void) {
 		failed = 1;
 	}
 	else DebugPrint("LaunchItem: %p\n", LaunchItem);
-*/
 
 	Drop_Item = (Drop_Item_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
 			0xB0000, PTRN_DROP_ITEM, MASK_DROP_ITEM);
@@ -340,7 +338,6 @@ void SearchVmFunctions(void) {
 	}
 	else DebugPrint("Drop_Item: %p\n", Drop_Item);
 
-/*
 	G_StartKamikaze = (G_StartKamikaze_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
 			0xB0000, PTRN_G_STARTKAMIKAZE, MASK_G_STARTKAMIKAZE);
 	if (G_StartKamikaze == NULL) {
@@ -357,9 +354,10 @@ void SearchVmFunctions(void) {
 	}
 	else DebugPrint("G_FreeEntity: %p\n", G_FreeEntity);
 
-	*/ bg_itemlist = qagame + 0xCD0C0; /*
+	bg_itemlist = qagame + 0xCD0C0; /*
 	bg_itemlist = (gitem_t*)PatternSearch((void*)((pint)qagame + 0x2CB000),
 			0xB0000, PTRN_BG_ITEMLIST, MASK_BG_ITEMLIST);
+*/
 	if (bg_itemlist == NULL) {
 		DebugPrint("ERROR: Unable to find bg_itemlist.\n");
 		failed = 1;
@@ -370,7 +368,6 @@ void SearchVmFunctions(void) {
 		DebugPrint("bg_numItems: %d\n", bg_numItems);
 	}
 
-*/
 
 	if (failed) {
 			DebugPrint("Exiting.\n");
