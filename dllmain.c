@@ -418,8 +418,8 @@ void InitializeVm(void) {
     g_entities = (gentity_t*)(*(int32_t*)OFFSET_RELP_G_ENTITIES + OFFSET_RELP_G_ENTITIES + 4);
     level = (level_locals_t*)(*(int32_t*)OFFSET_RELP_LEVEL + OFFSET_RELP_LEVEL + 4);
 #elif defined(__i386) || defined(_M_IX86)
-    //g_entities = (gentity_t*)(*(int32_t*)OFFSET_RELP_G_ENTITIES + 0xCAFF4 + (pint)qagame);
     g_entities = (gentity_t*)(qagame + 0x4FDC60);
+    level = (level_locals_t*)(qagame + 0x5E8B00);
 #endif
 }
 
@@ -436,7 +436,6 @@ void EntryPoint(void) {
 		return;
 
 	SearchFunctions();
-
 	// Initialize some key structure pointers before hooking, since we
 	// might use some of the functions that could be hooked later to
 	// get the pointer, such as SV_SetConfigstring.
