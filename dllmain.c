@@ -54,6 +54,7 @@ SV_DropClient_ptr SV_DropClient;
 Sys_SetModuleOffset_ptr Sys_SetModuleOffset;
 SV_SpawnServer_ptr SV_SpawnServer;
 Cmd_ExecuteString_ptr Cmd_ExecuteString;
+SV_Trace_ptr SV_Trace;
 
 // VM functions
 G_RunFrame_ptr G_RunFrame;
@@ -260,6 +261,13 @@ static void SearchFunctions(void) {
 		failed = 1;
 	}
 	else DebugPrint("Cmd_ExecuteString: %p\n", Cmd_ExecuteString);
+
+	SV_Trace = (SV_Trace_ptr)PatternSearchModule(&module, PTRN_SV_TRACE, MASK_SV_TRACE);
+	if (SV_Trace == NULL) {
+		DebugPrint("ERROR: Unable to find SV_Trace.\n");
+		failed = 1;
+	}
+	else DebugPrint("SV_Trace: %p\n", SV_Trace);
 
 	// Cmd_Argc is really small, making it hard to search for, so we use a reference to it instead.
 	Cmd_Argc = (Cmd_Argc_ptr)(*(int32_t*)OFFSET_RELP_CMD_ARGC + OFFSET_RELP_CMD_ARGC + 4);
