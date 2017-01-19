@@ -67,6 +67,7 @@ G_Damage_ptr G_Damage;
 Touch_Item_ptr Touch_Item;
 LaunchItem_ptr LaunchItem;
 Drop_Item_ptr Drop_Item;
+G_Spawn_ptr G_Spawn;
 G_StartKamikaze_ptr G_StartKamikaze;
 G_FreeEntity_ptr G_FreeEntity;
 
@@ -350,6 +351,14 @@ void SearchVmFunctions(void) {
 	}
 	else DebugPrint("Drop_Item: %p\n", Drop_Item);
 
+	G_Spawn = (G_Spawn_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
+			0xB0000, PTRN_G_SPAWN, MASK_G_SPAWN);
+	if (G_Spawn == NULL) {
+		DebugPrint("ERROR: Unable to find G_Spawn.\n");
+		failed = 1;
+	}
+	else DebugPrint("G_Spawn: %p\n", G_Spawn);
+
 	G_StartKamikaze = (G_StartKamikaze_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
 			0xB0000, PTRN_G_STARTKAMIKAZE, MASK_G_STARTKAMIKAZE);
 	if (G_StartKamikaze == NULL) {
@@ -366,7 +375,6 @@ void SearchVmFunctions(void) {
 	}
 	else DebugPrint("G_FreeEntity: %p\n", G_FreeEntity);
 
-	//bg_itemlist = qagame + 0x2CB8A0;
 	bg_itemlist = (gitem_t*)PatternSearch((void*)((pint)qagame + 0x2CB000),
 			0xB0000, PTRN_BG_ITEMLIST, MASK_BG_ITEMLIST);
 	if (bg_itemlist == NULL) {
