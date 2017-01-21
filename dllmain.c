@@ -67,6 +67,7 @@ G_Damage_ptr G_Damage;
 Touch_Item_ptr Touch_Item;
 LaunchItem_ptr LaunchItem;
 Drop_Item_ptr Drop_Item;
+TeleportPlayer_ptr TeleportPlayer;
 fire_rocket_ptr fire_rocket;
 G_Spawn_ptr G_Spawn;
 G_StartKamikaze_ptr G_StartKamikaze;
@@ -351,6 +352,14 @@ void SearchVmFunctions(void) {
 		failed = 1;
 	}
 	else DebugPrint("Drop_Item: %p\n", Drop_Item);
+
+	TeleportPlayer = (TeleportPlayer_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
+			0xB0000, PTRN_TELEPORTPLAYER, MASK_TELEPORTPLAYER);
+	if (TeleportPlayer == NULL) {
+		DebugPrint("ERROR: Unable to find TeleportPlayer.\n");
+		failed = 1;
+	}
+	else DebugPrint("TeleportPlayer: %p\n", TeleportPlayer);
 
 	fire_rocket = (fire_rocket_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
 			0xB0000, PTRN_FIRE_ROCKET, MASK_FIRE_ROCKET);
