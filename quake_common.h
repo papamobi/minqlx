@@ -1515,6 +1515,7 @@ typedef void (__cdecl *Touch_Item_ptr)(gentity_t *ent, gentity_t *other, trace_t
 typedef gentity_t* (__cdecl *LaunchItem_ptr)(gitem_t *item, vec3_t origin, vec3_t velocity);
 typedef gentity_t* (__cdecl *Drop_Item_ptr)(gentity_t *ent, gitem_t *item, float angle);
 typedef void (__cdecl *TeleportPlayer_ptr)(gentity_t *player, vec3_t origin, vec3_t angles);
+typedef void (__cdecl *G_MissileImpact_ptr)(gentity_t *ent, trace_t *trace);
 typedef gentity_t* (__cdecl *fire_rocket_ptr)(gentity_t *self, vec3_t start, vec3_t dir);
 typedef gentity_t* (__cdecl *G_Spawn_ptr)(void);
 typedef void (__cdecl *G_StartKamikaze_ptr)(gentity_t *ent);
@@ -1556,6 +1557,7 @@ extern Touch_Item_ptr Touch_Item;
 extern LaunchItem_ptr LaunchItem;
 extern Drop_Item_ptr Drop_Item;
 extern TeleportPlayer_ptr TeleportPlayer;
+extern G_MissileImpact_ptr G_MissileImpact;
 extern fire_rocket_ptr fire_rocket;
 extern G_Spawn_ptr G_Spawn;
 extern G_StartKamikaze_ptr G_StartKamikaze;
