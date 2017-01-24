@@ -188,6 +188,36 @@ void __cdecl My_ClientSpawn(gentity_t* ent) {
     ClientSpawnDispatcher(ent - g_entities);
 }
 
+void __cdecl My_G_MissileImpact( gentity_t *ent, trace_t *trace ) {
+    G_MissileImpact(ent, trace);
+
+    if ( (ent->s.eType != ET_MISSILE) && !strcmp(ent->classname, "translocator")) {
+        trace_t tr;
+        vec3_t xs = {0, -15, 15};
+        vec3_t ys = {0, -15, 15};
+        vec3_t zs = {0, -24, 32};
+        gentity_t* player = ent->parent;
+        for (int i=0; i<3; i++)
+        for (int j=0; j<3; j++)
+        for (int k=0; k<3; k++) {
+            vec3_t start = {ent->r.currentOrigin[0] - xs[i], ent->r.currentOrigin[1] - ys[j], ent->r.currentOrigin[2] - zs[k]};
+
+            SV_Trace(&tr, start, player->r.mins, player->r.maxs, start, player->r.ownerNum, player->clipmask, qfalse);
+
+            if (tr.entityNum >= 0 && tr.entityNum < sv_maxclients->integer) {
+              // telefrag victim
+              int victim_id = tr.entityNum;
+              TeleportPlayer( player, g_entities[ victim_id ].r.currentOrigin, ent->s.apos.trBase);
+              i = j = k = 3; break;
+            } else if (!tr.startsolid) {
+              TeleportPlayer( player, start, ent->s.apos.trBase);
+              i = j = k = 3; break;
+            }
+        }
+        G_FreeEntity(ent);
+    }
+}
+
 void __cdecl My_G_StartKamikaze(gentity_t* ent) {
     int client_id, is_used_on_demand;
 
@@ -323,6 +353,12 @@ void HookVm(void) {
     res = Hook((void*)G_StartKamikaze, My_G_StartKamikaze, (void*)&G_StartKamikaze);
     if (res) {
         DebugPrint("ERROR: Failed to hook G_StartKamikaze: %d\n", res);
+        failed = 1;
+    }
+
+    res = Hook((void*)G_MissileImpact, My_G_MissileImpact, (void*)&G_MissileImpact);
+    if (res) {
+        DebugPrint("ERROR: Failed to hook G_MissileImpact: %d\n", res);
         failed = 1;
     }
 
