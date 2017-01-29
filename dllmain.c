@@ -71,6 +71,7 @@ TeleportPlayer_ptr TeleportPlayer;
 G_MissileImpact_ptr G_MissileImpact;
 fire_rocket_ptr fire_rocket;
 G_Spawn_ptr G_Spawn;
+G_TempEntity_ptr G_TempEntity;
 G_StartKamikaze_ptr G_StartKamikaze;
 G_FreeEntity_ptr G_FreeEntity;
 
@@ -385,6 +386,14 @@ void SearchVmFunctions(void) {
 		failed = 1;
 	}
 	else DebugPrint("G_Spawn: %p\n", G_Spawn);
+
+	G_TempEntity = (G_TempEntity_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
+			0xB0000, PTRN_G_TEMPENTITY, MASK_G_TEMPENTITY);
+	if (G_TempEntity == NULL) {
+		DebugPrint("ERROR: Unable to find G_TempEntity.\n");
+		failed = 1;
+	}
+	else DebugPrint("G_TempEntity: %p\n", G_TempEntity);
 
 	G_StartKamikaze = (G_StartKamikaze_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
 			0xB0000, PTRN_G_STARTKAMIKAZE, MASK_G_STARTKAMIKAZE);

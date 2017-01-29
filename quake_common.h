@@ -117,6 +117,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define DAMAGE_NO_PROTECTION 0x00000008
 
 #define PMF_AIRCONTROL 0x10000
+#define SVF_SINGLECLIENT 0x00000100
 
 typedef enum {qfalse, qtrue} qboolean;
 typedef unsigned char byte;
@@ -1518,6 +1519,7 @@ typedef void (__cdecl *TeleportPlayer_ptr)(gentity_t *player, vec3_t origin, vec
 typedef void (__cdecl *G_MissileImpact_ptr)(gentity_t *ent, trace_t *trace);
 typedef gentity_t* (__cdecl *fire_rocket_ptr)(gentity_t *self, vec3_t start, vec3_t dir);
 typedef gentity_t* (__cdecl *G_Spawn_ptr)(void);
+typedef gentity_t* (__cdecl *G_TempEntity_ptr)( vec3_t origin, int event );
 typedef void (__cdecl *G_StartKamikaze_ptr)(gentity_t *ent);
 typedef void (__cdecl *G_FreeEntity_ptr)(gentity_t *ed);
 
@@ -1560,6 +1562,7 @@ extern TeleportPlayer_ptr TeleportPlayer;
 extern G_MissileImpact_ptr G_MissileImpact;
 extern fire_rocket_ptr fire_rocket;
 extern G_Spawn_ptr G_Spawn;
+extern G_TempEntity_ptr G_TempEntity;
 extern G_StartKamikaze_ptr G_StartKamikaze;
 extern G_FreeEntity_ptr G_FreeEntity;
 
