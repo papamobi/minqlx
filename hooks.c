@@ -182,6 +182,8 @@ char* __cdecl My_ClientConnect(int clientNum, qboolean firstTime, qboolean isBot
 }
 
 void __cdecl My_ClientSpawn(gentity_t* ent) {
+    speed_factors[ent - g_entities] = 1;
+
     ClientSpawn(ent);
     
     // Since we won't ever stop the real function from being called,
@@ -215,6 +217,11 @@ void __cdecl My_G_StartKamikaze(gentity_t* ent) {
 
     if (client_id != -1)
         KamikazeExplodeDispatcher(client_id, is_used_on_demand);
+}
+
+void __cdecl My_Pmove(pmove_t* pm) {
+    pm->ps->speed *= speed_factors[ pm->ps->clientNum ];
+    Pmove(pm);
 }
 #endif
 
@@ -322,6 +329,12 @@ void HookVm(void) {
 		failed = 1;
 	}
   count++;
+
+    res = Hook((void*)Pmove, My_Pmove, (void*)&Pmove);
+    if (res) {
+        DebugPrint("ERROR: Failed to hook Pmove: %d\n", res);
+        failed = 1;
+    }
 
     res = Hook((void*)G_StartKamikaze, My_G_StartKamikaze, (void*)&G_StartKamikaze);
     if (res) {
