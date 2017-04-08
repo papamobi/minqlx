@@ -69,6 +69,7 @@ Touch_Item_ptr Touch_Item;
 LaunchItem_ptr LaunchItem;
 Drop_Item_ptr Drop_Item;
 TeleportPlayer_ptr TeleportPlayer;
+G_ExplodeMissile_ptr G_ExplodeMissile;
 G_MissileImpact_ptr G_MissileImpact;
 fire_rocket_ptr fire_rocket;
 G_Spawn_ptr G_Spawn;
@@ -371,6 +372,14 @@ void SearchVmFunctions(void) {
 		failed = 1;
 	}
 	else DebugPrint("TeleportPlayer: %p\n", TeleportPlayer);
+
+	G_ExplodeMissile = (G_ExplodeMissile_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
+			0xB0000, PTRN_G_EXPLODEMISSILE, MASK_G_EXPLODEMISSILE);
+	if (G_ExplodeMissile == NULL) {
+		DebugPrint("ERROR: Unable to find G_ExplodeMissile.\n");
+		failed = 1;
+	}
+	else DebugPrint("G_ExplodeMissile: %p\n", G_ExplodeMissile);
 
 	G_MissileImpact = (G_MissileImpact_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
 			0xB0000, PTRN_G_MISSILEIMPACT, MASK_G_MISSILEIMPACT);
