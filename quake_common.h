@@ -37,6 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define CS_VOTE_STRING			9
 #define	CS_VOTE_YES				10
 #define	CS_VOTE_NO				11
+#define CS_LEVEL_START_TIME 13
 #define CS_ITEMS          15
 
 #define MAX_CLIENTS 64

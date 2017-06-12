@@ -10,6 +10,7 @@
 #include "quake_common.h"
 #include "patterns.h"
 #include "common.h"
+#include "extra.h"
 
 PyObject* client_command_handler = NULL;
 PyObject* server_command_handler = NULL;
@@ -1597,6 +1598,56 @@ static PyObject* PyMinqlx_ReplaceItems(PyObject* self, PyObject* args) {
 
 /*
 * ================================================================
+*                        save_gamestate
+* ================================================================
+*/
+
+static gamestate_t gs = {0};
+
+static PyObject* PyMinqlx_SaveGamestate(PyObject* self, PyObject* args) {
+
+    // ToDo: check warmup
+
+    gs.inuse = qtrue;
+    gs.gametime = level->time - level->startTime;
+    Py_RETURN_TRUE;
+
+    // ToDo: save players
+    // ToDo: save map
+    // ToDo: save gametype
+    // ToDo: save items
+    // ToDo: save missles
+}
+
+/*
+* ================================================================
+*                        load_gamestate
+* ================================================================
+*/
+
+static PyObject* PyMinqlx_LoadGamestate(PyObject* self, PyObject* args) {
+
+    if (!gs.inuse) {
+        SV_SendServerCommand(NULL, "print \"%s\"", "Error: no state available");
+        Py_RETURN_FALSE;
+    }
+
+    char cs_startTime[4096];
+    level->startTime = level->time - gs.gametime;
+    snprintf(cs_startTime, sizeof(cs_startTime), "%d", level->startTime);
+    My_SV_SetConfigstring(CS_LEVEL_START_TIME, cs_startTime);
+
+    Py_RETURN_TRUE;
+    // ToDo: save players
+    // ToDo: save map
+    // ToDo: save gametype
+    // ToDo: save items
+    // ToDo: save missles
+
+}
+
+/*
+* ================================================================
 *                         dev_print_items
 * ================================================================
 */
@@ -1766,6 +1817,10 @@ static PyMethodDef minqlxMethods[] = {
      "Slay player with mean of death."},
     {"replace_items", PyMinqlx_ReplaceItems, METH_VARARGS,
      "Replaces target entity's item with specified one."},
+    {"save_gamestate", PyMinqlx_SaveGamestate, METH_NOARGS,
+     "Saves gamestate."},
+    {"load_gamestate", PyMinqlx_LoadGamestate, METH_NOARGS,
+     "Loads gamestate."},
     {"dev_print_items", PyMinqlx_DevPrintItems, METH_NOARGS,
      "Prints all items and entity numbers to server console."},
     {"force_weapon_respawn_time", PyMinqlx_ForceWeaponRespawnTime, METH_VARARGS,
