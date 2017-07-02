@@ -54,6 +54,7 @@ SV_DropClient_ptr SV_DropClient;
 Sys_SetModuleOffset_ptr Sys_SetModuleOffset;
 SV_SpawnServer_ptr SV_SpawnServer;
 Cmd_ExecuteString_ptr Cmd_ExecuteString;
+SV_Trace_ptr SV_Trace;
 
 // VM functions
 G_RunFrame_ptr G_RunFrame;
@@ -62,10 +63,17 @@ G_InitGame_ptr G_InitGame;
 CheckPrivileges_ptr CheckPrivileges;
 ClientConnect_ptr ClientConnect;
 ClientSpawn_ptr ClientSpawn;
+Pmove_ptr Pmove;
 G_Damage_ptr G_Damage;
 Touch_Item_ptr Touch_Item;
 LaunchItem_ptr LaunchItem;
 Drop_Item_ptr Drop_Item;
+TeleportPlayer_ptr TeleportPlayer;
+G_ExplodeMissile_ptr G_ExplodeMissile;
+G_MissileImpact_ptr G_MissileImpact;
+fire_rocket_ptr fire_rocket;
+G_Spawn_ptr G_Spawn;
+G_TempEntity_ptr G_TempEntity;
 G_StartKamikaze_ptr G_StartKamikaze;
 G_FreeEntity_ptr G_FreeEntity;
 
@@ -261,6 +269,13 @@ static void SearchFunctions(void) {
 	}
 	else DebugPrint("Cmd_ExecuteString: %p\n", Cmd_ExecuteString);
 
+	SV_Trace = (SV_Trace_ptr)PatternSearchModule(&module, PTRN_SV_TRACE, MASK_SV_TRACE);
+	if (SV_Trace == NULL) {
+		DebugPrint("ERROR: Unable to find SV_Trace.\n");
+		failed = 1;
+	}
+	else DebugPrint("SV_Trace: %p\n", SV_Trace);
+
 	// Cmd_Argc is really small, making it hard to search for, so we use a reference to it instead.
 	Cmd_Argc = (Cmd_Argc_ptr)(*(int32_t*)OFFSET_RELP_CMD_ARGC + OFFSET_RELP_CMD_ARGC + 4);
 
@@ -310,6 +325,14 @@ void SearchVmFunctions(void) {
 	}
 	else DebugPrint("ClientSpawn: %p\n", ClientSpawn);
 
+	Pmove = (Pmove_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
+			0xB0000, PTRN_PMOVE, MASK_PMOVE);
+	if (Pmove == NULL) {
+		DebugPrint("ERROR: Unable to find Pmove.\n");
+		failed = 1;
+	}
+	else DebugPrint("Pmove: %p\n", Pmove);
+
 	G_Damage = (G_Damage_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
 			0xB0000, PTRN_G_DAMAGE, MASK_G_DAMAGE);
 	if (G_Damage == NULL) {
@@ -342,6 +365,54 @@ void SearchVmFunctions(void) {
 	}
 	else DebugPrint("Drop_Item: %p\n", Drop_Item);
 
+	TeleportPlayer = (TeleportPlayer_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
+			0xB0000, PTRN_TELEPORTPLAYER, MASK_TELEPORTPLAYER);
+	if (TeleportPlayer == NULL) {
+		DebugPrint("ERROR: Unable to find TeleportPlayer.\n");
+		failed = 1;
+	}
+	else DebugPrint("TeleportPlayer: %p\n", TeleportPlayer);
+
+	G_ExplodeMissile = (G_ExplodeMissile_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
+			0xB0000, PTRN_G_EXPLODEMISSILE, MASK_G_EXPLODEMISSILE);
+	if (G_ExplodeMissile == NULL) {
+		DebugPrint("ERROR: Unable to find G_ExplodeMissile.\n");
+		failed = 1;
+	}
+	else DebugPrint("G_ExplodeMissile: %p\n", G_ExplodeMissile);
+
+	G_MissileImpact = (G_MissileImpact_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
+			0xB0000, PTRN_G_MISSILEIMPACT, MASK_G_MISSILEIMPACT);
+	if (G_MissileImpact == NULL) {
+		DebugPrint("ERROR: Unable to find G_MissileImpact.\n");
+		failed = 1;
+	}
+	else DebugPrint("G_MissileImpact: %p\n", G_MissileImpact);
+
+	fire_rocket = (fire_rocket_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
+			0xB0000, PTRN_FIRE_ROCKET, MASK_FIRE_ROCKET);
+	if (fire_rocket == NULL) {
+		DebugPrint("ERROR: Unable to find fire_rocket\n");
+		failed = 1;
+	}
+	else DebugPrint("fire_rocket: %p\n", fire_rocket);
+
+	G_Spawn = (G_Spawn_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
+			0xB0000, PTRN_G_SPAWN, MASK_G_SPAWN);
+	if (G_Spawn == NULL) {
+		DebugPrint("ERROR: Unable to find G_Spawn.\n");
+		failed = 1;
+	}
+	else DebugPrint("G_Spawn: %p\n", G_Spawn);
+
+	G_TempEntity = (G_TempEntity_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
+			0xB0000, PTRN_G_TEMPENTITY, MASK_G_TEMPENTITY);
+	if (G_TempEntity == NULL) {
+		DebugPrint("ERROR: Unable to find G_TempEntity.\n");
+		failed = 1;
+	}
+	else DebugPrint("G_TempEntity: %p\n", G_TempEntity);
+
 	G_StartKamikaze = (G_StartKamikaze_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
 			0xB0000, PTRN_G_STARTKAMIKAZE, MASK_G_STARTKAMIKAZE);
 	if (G_StartKamikaze == NULL) {
@@ -358,7 +429,6 @@ void SearchVmFunctions(void) {
 	}
 	else DebugPrint("G_FreeEntity: %p\n", G_FreeEntity);
 
-	//bg_itemlist = qagame + 0x2CB8A0;
 	bg_itemlist = (gitem_t*)PatternSearch((void*)((pint)qagame + 0x2CB000),
 			0xB0000, PTRN_BG_ITEMLIST, MASK_BG_ITEMLIST);
 	if (bg_itemlist == NULL) {

@@ -118,6 +118,7 @@ static PyStructSequence_Field player_state_fields[] = {
     {"holdable", "The player's holdable item."},
     {"flight", "A struct sequence with flight parameters."},
     {"is_frozen", "Whether the player is frozen(freezetag)."},
+    {"air_control", "Whether the player's air control enabled."},
     {NULL}
 };
 
@@ -759,6 +760,8 @@ static PyObject* PyMinqlx_PlayerState(PyObject* self, PyObject* args) {
 
     PyStructSequence_SetItem(state, 12, PyBool_FromLong(g_entities[client_id].client->ps.pm_type == 4));
 
+    PyStructSequence_SetItem(state, 13, PyBool_FromLong(g_entities[client_id].client->ps.pm_flags & PMF_AIRCONTROL));
+
     return state;
 }
 
@@ -1161,7 +1164,7 @@ static PyObject* PyMinqlx_DropHoldable(PyObject* self, PyObject* args) {
     item = g_entities[client_id].client->ps.stats[STAT_HOLDABLE_ITEM];
     if (item == 0) Py_RETURN_FALSE;
 
-    angle = g_entities[client_id].s.apos.trBase[1] * (M_PI*2 / 360);
+    angle = g_entities[client_id].s.apos.trBase[YAW] * (M_PI*2 / 360);
     velocity[0] = 150*cos(angle);
     velocity[1] = 150*sin(angle);
     velocity[2] = 250;
@@ -1264,6 +1267,40 @@ static PyObject* PyMinqlx_SetScore(PyObject* self, PyObject* args) {
         Py_RETURN_FALSE;
 
     g_entities[client_id].client->ps.persistant[PERS_ROUND_SCORE] = score;
+    Py_RETURN_TRUE;
+}
+
+/*
+* ================================================================
+*                         set_air_control
+* ================================================================
+*/
+
+static PyObject* PyMinqlx_SetAirControl(PyObject* self, PyObject* args) {
+    int client_id;
+    PyObject* obj;
+    if (!PyArg_ParseTuple(args, "iO:set_air_control", &client_id, &obj))
+        return NULL;
+    else if (client_id < 0 || client_id >= sv_maxclients->integer) {
+        PyErr_Format(PyExc_ValueError,
+                     "client_id needs to be a number from 0 to %d.",
+                     sv_maxclients->integer);
+        return NULL;
+    }
+    else if (!g_entities[client_id].client)
+        Py_RETURN_FALSE;
+    else if (!PyBool_Check(obj)) {
+        PyErr_Format(PyExc_ValueError,
+                     "second argument needs to be a boolean.");
+        return NULL;
+    }
+
+    if (obj == Py_True) {
+        g_entities[client_id].client->ps.pm_flags |= PMF_AIRCONTROL;
+    } else {
+        g_entities[client_id].client->ps.pm_flags &= ~PMF_AIRCONTROL;
+    }
+
     Py_RETURN_TRUE;
 }
 
@@ -1597,6 +1634,92 @@ static PyObject* PyMinqlx_ReplaceItems(PyObject* self, PyObject* args) {
 
 /*
 * ================================================================
+*                         fire_translocator
+* ================================================================
+*/
+
+// em92: defining like this until separate q_math.c is used
+void AngleVectors (const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up)
+{
+  float   angle;
+  static float    sr, sp, sy, cr, cp, cy;
+  // static to help MS compiler fp bugs
+
+  angle = angles[YAW] * (M_PI*2 / 360);
+  sy = sin(angle);
+  cy = cos(angle);
+  angle = angles[PITCH] * (M_PI*2 / 360);
+  sp = sin(angle);
+  cp = cos(angle);
+  angle = angles[ROLL] * (M_PI*2 / 360);
+  sr = sin(angle);
+  cr = cos(angle);
+
+  if (forward)
+  {
+    forward[0] = cp*cy;
+    forward[1] = cp*sy;
+    forward[2] = -sp;
+  }
+  if (right)
+  {
+    right[0] = (-1*sr*sp*cy+-1*cr*-sy);
+    right[1] = (-1*sr*sp*sy+-1*cr*cy);
+    right[2] = -1*sr*cp;
+  }
+  if (up)
+  {
+    up[0] = (cr*sp*cy+-sr*-sy);
+    up[1] = (cr*sp*sy+-sr*cy);
+    up[2] = cr*cp;
+  }
+}
+
+#define VectorScale(v, s, o)  ((o)[0]=(v)[0]*(s),(o)[1]=(v)[1]*(s),(o)[2]=(v)[2]*(s))
+#define VectorCopy(a,b)       {b[0]=a[0];b[1]=a[1];b[2]=a[2];}
+
+static PyObject* PyMinqlx_FireTranslocator(PyObject* self, PyObject* args) {
+    int client_id;
+    if (!PyArg_ParseTuple(args, "i:fire_translocator", &client_id))
+        return NULL;
+    else if (client_id < 0 || client_id >= sv_maxclients->integer) {
+        PyErr_Format(PyExc_ValueError,
+                     "client_id needs to be a number from 0 to %d.",
+                     sv_maxclients->integer);
+        return NULL;
+    }
+    else if (!g_entities[client_id].client)
+        Py_RETURN_FALSE;
+    else if (g_entities[client_id].health <= 0)
+        Py_RETURN_FALSE;
+
+    gentity_t* player = &g_entities[client_id];
+
+    vec3_t dir;
+    AngleVectors( player->s.apos.trBase, dir, NULL, NULL);
+    gentity_t* missile = fire_rocket(player, player->s.pos.trBase, dir);
+
+    missile->s.weapon = 0;
+    missile->damage = 0;
+    missile->splashDamage = 0;
+    missile->splashRadius = 0;
+    missile->methodOfDeath = 0;
+    missile->splashMethodOfDeath = 0;
+    missile->classname = "translocator";
+
+    // s.apos is not used for missile entity
+    // saving player's angles to missile->s.apos
+    VectorCopy( player->s.apos.trBase, missile->s.apos.trBase );
+    VectorScale( dir, 1000, missile->s.pos.trDelta );
+
+    missile->nextthink = level->time + 15000;
+    missile->think = G_FreeEntity;
+
+    Py_RETURN_TRUE;
+}
+
+/*
+* ================================================================
 *                         dev_print_items
 * ================================================================
 */
@@ -1748,6 +1871,8 @@ static PyMethodDef minqlxMethods[] = {
      "Makes player invulnerable for limited time."},
     {"set_score", PyMinqlx_SetScore, METH_VARARGS,
      "Sets a player's score."},
+    {"set_air_control", PyMinqlx_SetAirControl, METH_VARARGS,
+     "Sets player's air control."},
     {"callvote", PyMinqlx_Callvote, METH_VARARGS,
      "Calls a vote as if started by the server and not a player."},
     {"allow_single_player", PyMinqlx_AllowSinglePlayer, METH_VARARGS,
@@ -1766,6 +1891,8 @@ static PyMethodDef minqlxMethods[] = {
      "Slay player with mean of death."},
     {"replace_items", PyMinqlx_ReplaceItems, METH_VARARGS,
      "Replaces target entity's item with specified one."},
+    {"fire_translocator", PyMinqlx_FireTranslocator, METH_VARARGS,
+     "Fires translocator."},
     {"dev_print_items", PyMinqlx_DevPrintItems, METH_NOARGS,
      "Prints all items and entity numbers to server console."},
     {"force_weapon_respawn_time", PyMinqlx_ForceWeaponRespawnTime, METH_VARARGS,

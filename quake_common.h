@@ -116,8 +116,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define DAMAGE_NO_PROTECTION 0x00000008
 
+#define PMF_AIRCONTROL 0x10000
+#define SVF_SINGLECLIENT 0x00000100
+
 typedef enum {qfalse, qtrue} qboolean;
 typedef unsigned char byte;
+
+// angle indexes
+#define PITCH       0   // up / down
+#define YAW         1   // left / right
+#define ROLL        2   // fall over
 
 typedef struct gentity_s gentity_t;
 typedef struct gclient_s gclient_t;
@@ -1495,6 +1503,7 @@ typedef void (__cdecl *Sys_SetModuleOffset_ptr)(char* moduleName, void* offset);
 typedef void (__cdecl *SV_LinkEntity_ptr)(sharedEntity_t* gEnt);
 typedef void (__cdecl *SV_SpawnServer_ptr)(char* server, qboolean killBots);
 typedef void (__cdecl *Cmd_ExecuteString_ptr)(const char* text);
+typedef void (__cdecl *SV_Trace_ptr)( trace_t *results, const vec3_t start, vec3_t mins, vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask, int capsule );
 // VM functions.
 typedef void (__cdecl *G_RunFrame_ptr)(int time);
 typedef void (__cdecl *G_AddEvent_ptr)(gentity_t* ent, int event, int eventParm);
@@ -1502,10 +1511,17 @@ typedef void (__cdecl *G_InitGame_ptr)(int levelTime, int randomSeed, int restar
 typedef int (__cdecl *CheckPrivileges_ptr)(gentity_t* ent, char* cmd);
 typedef char* (__cdecl *ClientConnect_ptr)(int clientNum, qboolean firstTime, qboolean isBot);
 typedef void (__cdecl *ClientSpawn_ptr)(gentity_t* ent);
+typedef void (__cdecl *Pmove_ptr)(pmove_t* pmove);
 typedef void (__cdecl *G_Damage_ptr)(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t dir, vec3_t point, int damage, int dflags, int mod);
 typedef void (__cdecl *Touch_Item_ptr)(gentity_t *ent, gentity_t *other, trace_t *trace);
 typedef gentity_t* (__cdecl *LaunchItem_ptr)(gitem_t *item, vec3_t origin, vec3_t velocity);
 typedef gentity_t* (__cdecl *Drop_Item_ptr)(gentity_t *ent, gitem_t *item, float angle);
+typedef void (__cdecl *TeleportPlayer_ptr)(gentity_t *player, vec3_t origin, vec3_t angles);
+typedef void (__cdecl *G_ExplodeMissile_ptr)( gentity_t *ent );
+typedef void (__cdecl *G_MissileImpact_ptr)(gentity_t *ent, trace_t *trace);
+typedef gentity_t* (__cdecl *fire_rocket_ptr)(gentity_t *self, vec3_t start, vec3_t dir);
+typedef gentity_t* (__cdecl *G_Spawn_ptr)(void);
+typedef gentity_t* (__cdecl *G_TempEntity_ptr)( vec3_t origin, int event );
 typedef void (__cdecl *G_StartKamikaze_ptr)(gentity_t *ent);
 typedef void (__cdecl *G_FreeEntity_ptr)(gentity_t *ed);
 
@@ -1532,6 +1548,7 @@ extern SV_DropClient_ptr SV_DropClient;
 extern Sys_SetModuleOffset_ptr Sys_SetModuleOffset;
 extern SV_SpawnServer_ptr SV_SpawnServer;
 extern Cmd_ExecuteString_ptr Cmd_ExecuteString;
+extern SV_Trace_ptr SV_Trace;
 // VM functions.
 extern G_RunFrame_ptr G_RunFrame;
 extern G_AddEvent_ptr G_AddEvent;
@@ -1539,10 +1556,17 @@ extern G_InitGame_ptr G_InitGame;
 extern CheckPrivileges_ptr CheckPrivileges;
 extern ClientConnect_ptr ClientConnect;
 extern ClientSpawn_ptr ClientSpawn;
+extern Pmove_ptr Pmove;
 extern G_Damage_ptr G_Damage;
 extern Touch_Item_ptr Touch_Item;
 extern LaunchItem_ptr LaunchItem;
 extern Drop_Item_ptr Drop_Item;
+extern TeleportPlayer_ptr TeleportPlayer;
+extern G_ExplodeMissile_ptr G_ExplodeMissile;
+extern G_MissileImpact_ptr G_MissileImpact;
+extern fire_rocket_ptr fire_rocket;
+extern G_Spawn_ptr G_Spawn;
+extern G_TempEntity_ptr G_TempEntity;
 extern G_StartKamikaze_ptr G_StartKamikaze;
 extern G_FreeEntity_ptr G_FreeEntity;
 
