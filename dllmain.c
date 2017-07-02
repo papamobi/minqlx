@@ -72,6 +72,7 @@ TeleportPlayer_ptr TeleportPlayer;
 G_ExplodeMissile_ptr G_ExplodeMissile;
 G_MissileImpact_ptr G_MissileImpact;
 fire_rocket_ptr fire_rocket;
+Pickup_Team_ptr Pickup_Team;
 G_Spawn_ptr G_Spawn;
 G_TempEntity_ptr G_TempEntity;
 G_StartKamikaze_ptr G_StartKamikaze;
@@ -396,6 +397,14 @@ void SearchVmFunctions(void) {
 		failed = 1;
 	}
 	else DebugPrint("fire_rocket: %p\n", fire_rocket);
+
+	Pickup_Team = (Pickup_Team_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
+			0xB0000, PTRN_PICKUP_TEAM, MASK_PICKUP_TEAM);
+	if (Pickup_Team == NULL) {
+		DebugPrint("ERROR: Unable to find Pickup_Team\n");
+		failed = 1;
+	}
+	else DebugPrint("Pickup_Team: %p\n", Pickup_Team);
 
 	G_Spawn = (G_Spawn_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
 			0xB0000, PTRN_G_SPAWN, MASK_G_SPAWN);
