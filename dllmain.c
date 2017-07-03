@@ -63,6 +63,7 @@ G_InitGame_ptr G_InitGame;
 CheckPrivileges_ptr CheckPrivileges;
 ClientConnect_ptr ClientConnect;
 ClientSpawn_ptr ClientSpawn;
+BG_CanItemBeGrabbed_ptr BG_CanItemBeGrabbed;
 Pmove_ptr Pmove;
 G_Damage_ptr G_Damage;
 Touch_Item_ptr Touch_Item;
@@ -325,6 +326,14 @@ void SearchVmFunctions(void) {
 		failed = 1;
 	}
 	else DebugPrint("ClientSpawn: %p\n", ClientSpawn);
+
+	BG_CanItemBeGrabbed = (BG_CanItemBeGrabbed_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
+			0xB0000, PTRN_BG_CANITEMBEGRABBED, MASK_BG_CANITEMBEGRABBED);
+	if (BG_CanItemBeGrabbed == NULL) {
+		DebugPrint("ERROR: Unable to find BG_CanItemBeGrabbed.\n");
+		failed = 1;
+	}
+	else DebugPrint("BG_CanItemBeGrabbed: %p\n", BG_CanItemBeGrabbed);
 
 	Pmove = (Pmove_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
 			0xB0000, PTRN_PMOVE, MASK_PMOVE);
