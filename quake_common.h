@@ -1511,7 +1511,7 @@ typedef void (__cdecl *G_InitGame_ptr)(int levelTime, int randomSeed, int restar
 typedef int (__cdecl *CheckPrivileges_ptr)(gentity_t* ent, char* cmd);
 typedef char* (__cdecl *ClientConnect_ptr)(int clientNum, qboolean firstTime, qboolean isBot);
 typedef void (__cdecl *ClientSpawn_ptr)(gentity_t* ent);
-typedef qboolean (__cdecl *BG_CanItemBeGrabbed_ptr)(int gametype, const entityState_t *ent, const playerState_t *ps);
+typedef qboolean (__cdecl *BG_CanItemBeGrabbed_ptr)(int _unk1, int _unk2, int gametype, const entityState_t *ent, const playerState_t *ps);
 typedef void (__cdecl *Pmove_ptr)(pmove_t* pmove);
 typedef void (__cdecl *G_Damage_ptr)(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t dir, vec3_t point, int damage, int dflags, int mod);
 typedef void (__cdecl *Touch_Item_ptr)(gentity_t *ent, gentity_t *other, trace_t *trace);
