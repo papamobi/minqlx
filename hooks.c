@@ -19,6 +19,8 @@
 void* qagame;
 void* qagame_dllentry;
 
+vmCvar_t* g_gametype;
+
 static void SetTag(void);
 
 void __cdecl My_Cmd_AddCommand(char* cmd, void* func) {
@@ -379,6 +381,21 @@ void HookVm(void) {
     if ( !seek_hook_slot( -count ) ) {
         DebugPrint("ERROR: Failed to rewind hook slot\nExiting.\n");
         exit(1);
+    }
+
+    cvarTable_t* cvar_table_item = vm_call_table + 20*sizeof(void*);
+    while(1) {
+        if (!cvar_table_item->cvarName) {
+            DebugPrint("ERROR: Failed to find g_gametype vmcvar\nExiting.\n");
+            exit(1);
+        }
+
+        if ( strcmp(cvar_table_item->cvarName, "g_gametype") == 0 ) {
+            g_gametype = cvar_table_item->vmCvar;
+            break;
+        }
+
+        cvar_table_item++;
     }
 #endif
 }
