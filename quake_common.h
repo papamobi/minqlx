@@ -1356,7 +1356,7 @@ typedef struct {
   qboolean capture;
 } roundState_t;
 
-typedef struct __attribute__((aligned(8))) {
+typedef struct {
   struct gclient_s *clients;
   struct gentity_s *gentities;
   int gentitySize;
@@ -1407,6 +1407,7 @@ typedef struct __attribute__((aligned(8))) {
   gentity_t *locationHead;
   int timePauseBegin;
   int timeOvertime;
+  int _unk1;
   int timeInitialPowerupSpawn;
   int bodyQueIndex;
   gentity_t *bodyQue[8];
