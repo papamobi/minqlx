@@ -1536,6 +1536,7 @@ typedef char* (__cdecl *ClientConnect_ptr)(int clientNum, qboolean firstTime, qb
 typedef void (__cdecl *ClientSpawn_ptr)(gentity_t* ent);
 typedef qboolean (__cdecl *BG_CanItemBeGrabbed_ptr)(int _unk1, int _unk2, int gametype, const entityState_t *ent, const playerState_t *ps);
 typedef void (__cdecl *Pmove_ptr)(pmove_t* pmove);
+typedef void (__cdecl *CA_RoundStateTransition_ptr)(void);
 typedef void (__cdecl *G_Damage_ptr)(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t dir, vec3_t point, int damage, int dflags, int mod);
 typedef void (__cdecl *Touch_Item_ptr)(gentity_t *ent, gentity_t *other, trace_t *trace);
 typedef gentity_t* (__cdecl *LaunchItem_ptr)(gitem_t *item, vec3_t origin, vec3_t velocity);
@@ -1583,6 +1584,7 @@ extern ClientConnect_ptr ClientConnect;
 extern ClientSpawn_ptr ClientSpawn;
 extern BG_CanItemBeGrabbed_ptr BG_CanItemBeGrabbed;
 extern Pmove_ptr Pmove;
+extern CA_RoundStateTransition_ptr CA_RoundStateTransition;
 extern G_Damage_ptr G_Damage;
 extern Touch_Item_ptr Touch_Item;
 extern LaunchItem_ptr LaunchItem;

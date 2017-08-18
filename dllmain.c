@@ -65,6 +65,7 @@ ClientConnect_ptr ClientConnect;
 ClientSpawn_ptr ClientSpawn;
 BG_CanItemBeGrabbed_ptr BG_CanItemBeGrabbed;
 Pmove_ptr Pmove;
+CA_RoundStateTransition_ptr CA_RoundStateTransition;
 G_Damage_ptr G_Damage;
 Touch_Item_ptr Touch_Item;
 LaunchItem_ptr LaunchItem;
@@ -342,6 +343,14 @@ void SearchVmFunctions(void) {
 		failed = 1;
 	}
 	else DebugPrint("Pmove: %p\n", Pmove);
+
+	CA_RoundStateTransition = (CA_RoundStateTransition_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
+			0xB0000, PTRN_CA_ROUNDSTATETRANSITION, MASK_CA_ROUNDSTATETRANSITION);
+	if (CA_RoundStateTransition == NULL) {
+		DebugPrint("ERROR: Unable to find CA_RoundStateTransition.\n");
+		failed = 1;
+	}
+	else DebugPrint("CA_RoundStateTransition: %p\n", CA_RoundStateTransition);
 
 	G_Damage = (G_Damage_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
 			0xB0000, PTRN_G_DAMAGE, MASK_G_DAMAGE);
