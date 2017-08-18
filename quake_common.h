@@ -575,6 +575,28 @@ typedef struct cvar_s {
 	struct cvar_s *hashNext;
 } cvar_t;
 
+#define MAX_CVAR_VALUE_STRING 256
+
+typedef int cvarHandle_t;
+
+typedef struct {
+  cvarHandle_t  handle;
+  int     modificationCount;
+  float   value;
+  int     integer;
+  char    string[MAX_CVAR_VALUE_STRING];
+} vmCvar_t;
+
+typedef struct {
+  vmCvar_t  *vmCvar;
+  char    *cvarName;
+  char    *defaultString;
+  int     cvarFlags;
+  int     modificationCount;
+  qboolean  trackChange;
+  qboolean teamShader;
+} cvarTable_t;
+
 typedef struct {
     qboolean    allowoverflow;  // if false, do a Com_Error
     qboolean    overflowed;     // set to true if the buffer size failed (with allowoverflow set)
