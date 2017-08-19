@@ -293,6 +293,30 @@ typedef enum {
 	BOTAI_START_FRAME				// ( int time );
 } gameExport_t;
 
+// https://github.com/brugal/wolfcamql/blob/73e2d707e5dd1fb0fc50d4ad9f00940909c4b3ec/code/game/bg_public.h#L379-L406
+typedef enum {
+  GT_FFA,       // free for all
+  GT_TOURNAMENT,    // one on one tournament
+  GT_RACE,  // ql replaced single player with race
+
+  //-- team games go after this --
+
+  GT_TEAM,      // team deathmatch
+  GT_CA,        // clan arena
+
+  GT_CTF,       // capture the flag  5
+  GT_1FCTF,
+  GT_OBELISK,
+  GT_HARVESTER,
+  GT_FREEZETAG,
+
+  GT_DOMINATION,  // 10
+  GT_CTFS,
+  GT_RED_ROVER,
+
+  GT_MAX_GAME_TYPE,
+} gametype_t;
+
 typedef enum {
   PM_NORMAL = 0x0,
   PM_NOCLIP = 0x1,
