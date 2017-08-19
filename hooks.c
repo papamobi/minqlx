@@ -253,6 +253,28 @@ void __cdecl My_CA_RoundStateTransition(void) {
     }
     CA_RoundStateTransition();
 }
+
+void __cdecl My_Touch_Item(gentity_t *ent, gentity_t *other, trace_t *trace) {
+    if (ent->s.modelindex == MODELINDEX_NEUTRALFLAG) {
+        int gt = g_gametype->integer;
+        g_gametype->integer = GT_1FCTF;
+        Touch_Item(ent, other, trace);
+        g_gametype->integer = gt;
+    } else {
+        Touch_Item(ent, other, trace);
+    }
+}
+
+void __cdecl My_player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath ){
+    if (self->client && self->client->ps.powerups[PW_NEUTRALFLAG]) {
+        int gt = g_gametype->integer;
+        g_gametype->integer = GT_1FCTF;
+        player_die(self, inflictor, attacker, damage, meansOfDeath );
+        g_gametype->integer = gt;
+    } else {
+        player_die(self, inflictor, attacker, damage, meansOfDeath );
+    }
+}
 #endif
 
 // Hook static functions. Can be done before program even runs.
@@ -359,6 +381,20 @@ void HookVm(void) {
 		failed = 1;
 	}
   count++;
+
+    res = Hook((void*)Touch_Item, My_Touch_Item, (void*)&Touch_Item);
+    if (res) {
+        DebugPrint("ERROR: Failed to hook Touch_Item: %d\n", res);
+        failed = 1;
+    }
+    count++;
+
+    res = Hook((void*)player_die, My_player_die, (void*)&player_die);
+    if (res) {
+        DebugPrint("ERROR: Failed to hook player_die: %d\n", res);
+        failed = 1;
+    }
+    count++;
 
     res = Hook((void*)CA_RoundStateTransition, My_CA_RoundStateTransition, (void*)&CA_RoundStateTransition);
     if (res) {
