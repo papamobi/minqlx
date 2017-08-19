@@ -121,6 +121,7 @@ static PyStructSequence_Field player_state_fields[] = {
     {"flight", "A struct sequence with flight parameters."},
     {"is_frozen", "Whether the player is frozen(freezetag)."},
     {"air_control", "Whether the player's air control enabled."},
+    {"is_carring_neutral_flag", "Whether the player is carring neutral flag."},
     {NULL}
 };
 
@@ -764,6 +765,8 @@ static PyObject* PyMinqlx_PlayerState(PyObject* self, PyObject* args) {
 
     PyStructSequence_SetItem(state, 13, PyBool_FromLong(g_entities[client_id].client->ps.pm_flags & PMF_AIRCONTROL));
 
+    PyStructSequence_SetItem(state, 14, PyBool_FromLong(g_entities[client_id].client->ps.powerups[PW_NEUTRALFLAG] > level->time));
+
     return state;
 }
 
@@ -1301,6 +1304,40 @@ static PyObject* PyMinqlx_SetAirControl(PyObject* self, PyObject* args) {
         g_entities[client_id].client->ps.pm_flags |= PMF_AIRCONTROL;
     } else {
         g_entities[client_id].client->ps.pm_flags &= ~PMF_AIRCONTROL;
+    }
+
+    Py_RETURN_TRUE;
+}
+
+/*
+* ================================================================
+*                         set_neutral_flag
+* ================================================================
+*/
+
+static PyObject* PyMinqlx_SetNeutralFlag(PyObject* self, PyObject* args) {
+    int client_id;
+    PyObject* obj;
+    if (!PyArg_ParseTuple(args, "iO:set_neutral_flag", &client_id, &obj))
+        return NULL;
+    else if (client_id < 0 || client_id >= sv_maxclients->integer) {
+        PyErr_Format(PyExc_ValueError,
+                     "client_id needs to be a number from 0 to %d.",
+                     sv_maxclients->integer);
+        return NULL;
+    }
+    else if (!g_entities[client_id].client)
+        Py_RETURN_FALSE;
+    else if (!PyBool_Check(obj)) {
+        PyErr_Format(PyExc_ValueError,
+                     "second argument needs to be a boolean.");
+        return NULL;
+    }
+
+    if (obj == Py_True) {
+        g_entities[client_id].client->ps.powerups[PW_NEUTRALFLAG] = INT_MAX;
+    } else {
+        g_entities[client_id].client->ps.powerups[PW_NEUTRALFLAG] = 0;
     }
 
     Py_RETURN_TRUE;
@@ -1875,6 +1912,8 @@ static PyMethodDef minqlxMethods[] = {
      "Sets a player's score."},
     {"set_air_control", PyMinqlx_SetAirControl, METH_VARARGS,
      "Sets player's air control."},
+    {"set_neutral_flag", PyMinqlx_SetNeutralFlag, METH_VARARGS,
+     "Gives or takes neutral flag from player."},
     {"callvote", PyMinqlx_Callvote, METH_VARARGS,
      "Calls a vote as if started by the server and not a player."},
     {"allow_single_player", PyMinqlx_AllowSinglePlayer, METH_VARARGS,
