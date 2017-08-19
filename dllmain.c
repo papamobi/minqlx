@@ -66,6 +66,7 @@ ClientSpawn_ptr ClientSpawn;
 BG_CanItemBeGrabbed_ptr BG_CanItemBeGrabbed;
 Pmove_ptr Pmove;
 CA_RoundStateTransition_ptr CA_RoundStateTransition;
+player_die_ptr player_die;
 G_Damage_ptr G_Damage;
 Touch_Item_ptr Touch_Item;
 LaunchItem_ptr LaunchItem;
@@ -351,6 +352,14 @@ void SearchVmFunctions(void) {
 		failed = 1;
 	}
 	else DebugPrint("CA_RoundStateTransition: %p\n", CA_RoundStateTransition);
+
+	player_die = (player_die_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
+			0xB0000, PTRN_PLAYER_DIE, MASK_PLAYER_DIE);
+	if (player_die == NULL) {
+		DebugPrint("ERROR: Unable to find player_die.\n");
+		failed = 1;
+	}
+	else DebugPrint("player_die: %p\n", player_die);
 
 	G_Damage = (G_Damage_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
 			0xB0000, PTRN_G_DAMAGE, MASK_G_DAMAGE);
