@@ -1140,7 +1140,7 @@ void __cdecl Switch_Touch_Item(gentity_t *ent) {
     ent->nextthink = level->time + 29000;
 }
 
-void __cdecl My_Touch_Item(gentity_t *ent, gentity_t *other, trace_t *trace) {
+void __cdecl touch_holdable(gentity_t *ent, gentity_t *other, trace_t *trace) {
     if (ent->parent == other) return;
     Touch_Item(ent, other, trace);
 }
@@ -1172,7 +1172,7 @@ static PyObject* PyMinqlx_DropHoldable(PyObject* self, PyObject* args) {
     velocity[2] = 250;
 
     gentity_t* entity = LaunchItem(bg_itemlist + item, g_entities[client_id].s.pos.trBase, velocity);
-    entity->touch     = (void*)My_Touch_Item;
+    entity->touch     = (void*)touch_holdable;
     entity->parent    = &g_entities[client_id];
     entity->think     = Switch_Touch_Item;
     entity->nextthink = level->time + 1000;
