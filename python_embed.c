@@ -24,6 +24,7 @@ PyObject* rcon_handler = NULL;
 PyObject* console_print_handler = NULL;
 PyObject* client_spawn_handler = NULL;
 
+PyObject* before_round_end_handler = NULL;
 PyObject* kamikaze_use_handler = NULL;
 PyObject* kamikaze_explode_handler = NULL;
 
@@ -68,6 +69,7 @@ static handler_t handlers[] = {
         {"console_print",       &console_print_handler},
         {"player_spawn",        &client_spawn_handler},
 
+        {"before_round_end",    &before_round_end_handler},
         {"kamikaze_use",        &kamikaze_use_handler},
         {"kamikaze_explode",    &kamikaze_explode_handler},
 

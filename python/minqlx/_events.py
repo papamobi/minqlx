@@ -555,6 +555,13 @@ class UserinfoDispatcher(EventDispatcher):
         else:
             return super().handle_return(handler, value)
 
+class BeforeRoundEndDispatcher(EventDispatcher):
+    """Event that goes off when round is going to end."""
+    name = "before_round_end"
+
+    def dispatch(self):
+        return super().dispatch()
+
 class KamikazeUseDispatcher(EventDispatcher):
     """Event that goes off when player uses kamikaze item."""
     name = "kamikaze_use"
@@ -583,6 +590,7 @@ EVENT_DISPATCHERS.add_dispatcher(PlayerConnectDispatcher)
 EVENT_DISPATCHERS.add_dispatcher(PlayerLoadedDispatcher)
 EVENT_DISPATCHERS.add_dispatcher(PlayerDisonnectDispatcher)
 EVENT_DISPATCHERS.add_dispatcher(PlayerSpawnDispatcher)
+EVENT_DISPATCHERS.add_dispatcher(BeforeRoundEndDispatcher)
 EVENT_DISPATCHERS.add_dispatcher(KamikazeUseDispatcher)
 EVENT_DISPATCHERS.add_dispatcher(KamikazeExplodeDispatcher)
 EVENT_DISPATCHERS.add_dispatcher(StatsDispatcher)

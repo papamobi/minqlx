@@ -59,6 +59,7 @@ extern PyObject* rcon_handler;
 extern PyObject* console_print_handler;
 extern PyObject* client_spawn_handler;
 
+extern PyObject* before_round_end_handler;
 extern PyObject* kamikaze_use_handler;
 extern PyObject* kamikaze_explode_handler;
 
@@ -89,6 +90,7 @@ void RconDispatcher(const char* cmd);
 char* ConsolePrintDispatcher(char* cmd);
 void ClientSpawnDispatcher(int client_id);
 
+void BeforeRoundEndDispatcher(void);
 void KamikazeUseDispatcher(int client_id);
 void KamikazeExplodeDispatcher(int client_id, int is_used_on_demand);
 

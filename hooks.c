@@ -246,6 +246,13 @@ void __cdecl My_G_StartKamikaze(gentity_t* ent) {
     if (client_id != -1)
         KamikazeExplodeDispatcher(client_id, is_used_on_demand);
 }
+
+void __cdecl My_CA_RoundStateTransition(void) {
+    if (level->roundState.eCurrent == ROUND_OVER) {
+        BeforeRoundEndDispatcher();
+    }
+    CA_RoundStateTransition();
+}
 #endif
 
 // Hook static functions. Can be done before program even runs.
@@ -352,6 +359,13 @@ void HookVm(void) {
 		failed = 1;
 	}
   count++;
+
+    res = Hook((void*)CA_RoundStateTransition, My_CA_RoundStateTransition, (void*)&CA_RoundStateTransition);
+    if (res) {
+        DebugPrint("ERROR: Failed to hook CA_RoundStateTransition: %d\n", res);
+        failed = 1;
+    }
+    count++;
 
     res = Hook((void*)G_StartKamikaze, My_G_StartKamikaze, (void*)&G_StartKamikaze);
     if (res) {

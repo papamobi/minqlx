@@ -387,6 +387,16 @@ def handle_player_spawn(client_id):
         minqlx.log_exception()
         return True
 
+def handle_before_round_end():
+    """Called right before round ends. Can deny round ending.
+
+    """
+    try:
+        return minqlx.EVENT_DISPATCHERS["before_round_end"].dispatch()
+    except:
+        minqlx.log_exception()
+        return True
+
 def handle_kamikaze_use(client_id):
     """This will be called whenever player uses kamikaze item.
 
@@ -494,5 +504,6 @@ def register_handlers():
     minqlx.register_handler("player_spawn", handle_player_spawn)
     minqlx.register_handler("console_print", handle_console_print)
 
+    minqlx.register_handler("before_round_end", handle_before_round_end)
     minqlx.register_handler("kamikaze_use", handle_kamikaze_use)
     minqlx.register_handler("kamikaze_explode", handle_kamikaze_explode)
