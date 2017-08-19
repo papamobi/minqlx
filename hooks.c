@@ -78,13 +78,18 @@ void __cdecl My_G_InitGame(int levelTime, int randomSeed, int restart) {
 #ifndef NOPY
 void __cdecl My_SV_ExecuteClientCommand(client_t *cl, char *s, qboolean clientOK) {
     char* res = s;
+    qboolean is_dropflag = qfalse;
     if (clientOK && cl->gentity) {
         res = ClientCommandDispatcher(cl - svs->clients, s);
         if (!res)
             return;
+        is_dropflag = strcmp(s, "dropflag") == 0;
     }
 
+    int gt = g_gametype->integer;
+    if (is_dropflag) g_gametype->integer = GT_1FCTF;
     SV_ExecuteClientCommand(cl, res, clientOK);
+    if (is_dropflag) g_gametype->integer = gt;
 }
 
 void __cdecl My_SV_SendServerCommand(client_t* cl, char* fmt, ...) {
