@@ -182,6 +182,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MODELINDEX_PROXLAUNCHER 51
 #define MODELINDEX_CHAINGUN     52
 
+#define MODELINDEX_SPAWNARMOR   53
+#define MODELINDEX_HMG          54
+#define MODELINDEX_HEAVYBULLETS 55
+#define MODELINDEX_AMMOPACK     56
+#define MODELINDEX_SILVERKEY    57
+#define MODELINDEX_GOLDKEY      58
+#define MODELINDEX_MASTERKEY    59
+
 typedef enum {qfalse, qtrue} qboolean;
 typedef unsigned char byte;
 
