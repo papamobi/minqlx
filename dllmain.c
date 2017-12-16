@@ -67,6 +67,7 @@ RespawnItem_ptr RespawnItem;
 Touch_Item_ptr Touch_Item;
 LaunchItem_ptr LaunchItem;
 Drop_Item_ptr Drop_Item;
+Team_DroppedFlagThink_ptr Team_DroppedFlagThink;
 Team_TouchEnemyFlag_ptr Team_TouchEnemyFlag;
 Team_TouchOurFlag_ptr Team_TouchOurFlag;
 G_StartKamikaze_ptr G_StartKamikaze;
@@ -352,6 +353,14 @@ void SearchVmFunctions(void) {
 		failed = 1;
 	}
 	else DebugPrint("Drop_Item: %p\n", Drop_Item);
+
+	Team_DroppedFlagThink = (Team_DroppedFlagThink_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
+			0xB0000, PTRN_TEAM_DROPPEDFLAGTHINK, MASK_TEAM_DROPPEDFLAGTHINK);
+	if (Team_DroppedFlagThink == NULL) {
+		DebugPrint("ERROR: Unable to find Team_DroppedFlagThink.\n");
+		failed = 1;
+	}
+	else DebugPrint("Team_DroppedFlagThink: %p\n", Team_DroppedFlagThink);
 
 	Team_TouchEnemyFlag = (Team_TouchEnemyFlag_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
 			0xB0000, PTRN_TEAM_TOUCHENEMYFLAG, MASK_TEAM_TOUCHENEMYFLAG);
