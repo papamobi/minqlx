@@ -11,6 +11,7 @@
 #include "quake_common.h"
 #include "simple_hook.h"
 #include "patches.h"
+#include "sacrifice.h"
 
 #ifndef NOPY
 #include "pyminqlx.h"
@@ -161,6 +162,8 @@ void __cdecl My_SV_SpawnServer(char* server, qboolean killBots) {
     // We call NewGameDispatcher here instead of G_InitGame when it's not just a map_restart,
     // otherwise configstring 0 and such won't be initialized and we can't instantiate minqlx.Game.
     NewGameDispatcher(qfalse);
+
+    Sacrifice_Init();
 }
 
 void  __cdecl My_G_RunFrame(int time) {
@@ -188,6 +191,31 @@ void __cdecl My_ClientSpawn(gentity_t* ent) {
     // we trigger the event after calling the real one. This will allow
     // us to set weapons and such without it getting overriden later.
     ClientSpawnDispatcher(ent - g_entities);
+}
+
+void __cdecl My_Team_DroppedFlagThink( gentity_t *ent ) {
+  Sacrifice_ResetFlag( ent );
+}
+
+gentity_t* __cdecl My_LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity ) {
+  gentity_t* r = LaunchItem(item, origin, velocity);
+  if (r->think == Team_DroppedFlagThink && Sacrifice_IsEnabled() )
+    r->think = My_Team_DroppedFlagThink;
+  return r;
+}
+
+int __cdecl My_Team_TouchOurFlag( gentity_t *ent, gentity_t *other, int team ) {
+  if ( Sacrifice_IsEnabled() )
+    return Sacrifice_TouchObelisk( ent, other, team );
+  else
+    return Team_TouchOurFlag( ent, other, team );
+}
+
+int __cdecl My_Team_TouchEnemyFlag( gentity_t *ent, gentity_t *other, int team ) {
+  if ( Sacrifice_IsEnabled() )
+    return Sacrifice_TouchFlag( ent, other, team );
+  else
+    return Team_TouchEnemyFlag( ent, other, team );
 }
 
 void __cdecl My_G_StartKamikaze(gentity_t* ent) {
@@ -322,6 +350,28 @@ void HookVm(void) {
 		failed = 1;
 	}
   count++;
+
+    res = Hook((void*)LaunchItem, My_LaunchItem, (void*)&LaunchItem);
+    if (res) {
+        DebugPrint("ERROR: Failed to hook LaunchItem: %d\n", res);
+        failed = 1;
+    }
+    count++;
+
+
+    res = Hook((void*)Team_TouchEnemyFlag, My_Team_TouchEnemyFlag, (void*)&Team_TouchEnemyFlag);
+    if (res) {
+        DebugPrint("ERROR: Failed to hook Team_TouchEnemyFlag: %d\n", res);
+        failed = 1;
+    }
+    count++;
+
+    res = Hook((void*)Team_TouchOurFlag, My_Team_TouchOurFlag, (void*)&Team_TouchOurFlag);
+    if (res) {
+        DebugPrint("ERROR: Failed to hook Team_TouchOurFlag: %d\n", res);
+        failed = 1;
+    }
+    count++;
 
     res = Hook((void*)G_StartKamikaze, My_G_StartKamikaze, (void*)&G_StartKamikaze);
     if (res) {
