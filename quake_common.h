@@ -1464,6 +1464,9 @@ typedef struct {
 	char* description; // Command description that gets printed when you do "?".
 } adminCmd_t;
 
+// vector macros
+#define VectorCopy(a,b) ((b)[0]=(a)[0],(b)[1]=(a)[1],(b)[2]=(a)[2])
+
 // A pointer to the qagame module in memory and its entry point.
 extern void* qagame;
 extern void* qagame_dllentry;
