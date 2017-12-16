@@ -38,6 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define	CS_VOTE_YES				10
 #define	CS_VOTE_NO				11
 #define CS_ITEMS          15
+#define CS_FLAGSTATUS     658
 
 #define MAX_CLIENTS 64
 #define MAX_CHALLENGES  1024
@@ -546,6 +547,14 @@ typedef enum {
 	EXEC_INSERT,		// insert at current position, but don't run yet
 	EXEC_APPEND			// add to end of the command buffer (normal case)
 } cbufExec_t;
+
+typedef enum _flag_status {
+  FLAG_ATBASE = 0,
+  FLAG_TAKEN,     // CTF
+  FLAG_TAKEN_RED,   // One Flag CTF
+  FLAG_TAKEN_BLUE,  // One Flag CTF
+  FLAG_DROPPED
+} flagStatus_t;
 
 // Mino: Quite different from Q3. Not sure on everything.
 typedef struct cvar_s {
