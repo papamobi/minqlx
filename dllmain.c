@@ -63,6 +63,7 @@ CheckPrivileges_ptr CheckPrivileges;
 ClientConnect_ptr ClientConnect;
 ClientSpawn_ptr ClientSpawn;
 G_Damage_ptr G_Damage;
+RespawnItem_ptr RespawnItem;
 Touch_Item_ptr Touch_Item;
 LaunchItem_ptr LaunchItem;
 Drop_Item_ptr Drop_Item;
@@ -318,6 +319,14 @@ void SearchVmFunctions(void) {
 		failed = 1;
 	}
 	else DebugPrint("G_Damage: %p\n", G_Damage);
+
+	RespawnItem = (RespawnItem_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
+			0xB0000, PTRN_RESPAWNITEM, MASK_RESPAWNITEM);
+	if (G_Damage == NULL) {
+		DebugPrint("ERROR: Unable to find RespawnItem.\n");
+		failed = 1;
+	}
+	else DebugPrint("RespawnItem: %p\n", RespawnItem);
 
 	Touch_Item = (Touch_Item_ptr)PatternSearch((void*)((pint)qagame + 0xB000),
 			0xB0000, PTRN_TOUCH_ITEM, MASK_TOUCH_ITEM);
