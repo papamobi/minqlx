@@ -96,6 +96,11 @@ void Sacrifice_Init(void) {
     if (strcmp(ent->classname, "team_CTF_neutralflag") == 0) {
       n_flag = ent;
       VectorCopy( ent->s.origin, ent->s.origin2 );
+      n_flag->r.svFlags |= SVF_NOCLIENT;
+      n_flag->s.eFlags |= EF_NODRAW;
+      n_flag->r.contents = 0;
+      n_flag->nextthink = level->time + 15000;
+      n_flag->think = RespawnItem;
       return;
     }
   }
