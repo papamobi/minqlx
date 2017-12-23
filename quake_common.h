@@ -31,6 +31,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "patterns.h"
 #include "common.h"
 
+#define SVF_NOCLIENT  0x00000001  // don't send entity to clients, even if it has effects
+
 #define	CS_SCORES1				6
 #define	CS_SCORES2				7
 #define CS_VOTE_TIME			8
