@@ -16,7 +16,7 @@ void __cdecl Sacrifice_ScoreThink( gentity_t* ent ) {
   int team, cs;
   char buffer[16];
 
-  // ToDo: add period constatnt
+  if (level->intermissionTime) return;
 
   ent->nextthink = level->time + SCORE_PERIOD * 1000 ;
   ent->think = Sacrifice_ScoreThink;
