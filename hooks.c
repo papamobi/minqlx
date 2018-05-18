@@ -11,6 +11,7 @@
 #include "quake_common.h"
 #include "simple_hook.h"
 #include "patches.h"
+#include "race.h"
 
 #ifndef NOPY
 #include "pyminqlx.h"
@@ -347,6 +348,8 @@ void HookVm(void) {
         exit(1);
     }
 #endif
+
+    hook_race_methods();
 }
 
 

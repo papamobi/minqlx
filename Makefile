@@ -14,8 +14,8 @@ CC = gcc
 CFLAGS += -shared -std=gnu11
 LDFLAGS_NOPY += -ldl
 LDFLAGS += $(shell python3-config --libs)
-SOURCES_NOPY += dllmain.c commands.c simple_hook.c hooks.c misc.c maps_parser.c trampoline.c patches.c
-SOURCES += dllmain.c commands.c python_embed.c python_dispatchers.c simple_hook.c hooks.c misc.c maps_parser.c trampoline.c patches.c
+SOURCES_NOPY += dllmain.c commands.c simple_hook.c hooks.c misc.c maps_parser.c trampoline.c patches.c race.c
+SOURCES += dllmain.c commands.c python_embed.c python_dispatchers.c simple_hook.c hooks.c misc.c maps_parser.c trampoline.c patches.c race.c
 OBJS = $(SOURCES:.c=.o)
 OBJS_NOPY = $(SOURCES_NOPY:.c=.o)
 OUTPUT = $(BINDIR)/minqlx.so
