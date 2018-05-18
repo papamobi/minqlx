@@ -1455,6 +1455,11 @@ typedef struct {
 	char* description; // Command description that gets printed when you do "?".
 } adminCmd_t;
 
+typedef struct {
+  char  *name;
+  void  (*spawn)(gentity_t *ent);
+} spawn_t;
+
 // A pointer to the qagame module in memory and its entry point.
 extern void* qagame;
 extern void* qagame_dllentry;
