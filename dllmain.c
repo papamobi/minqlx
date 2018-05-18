@@ -65,6 +65,7 @@ G_Damage_ptr G_Damage;
 Touch_Item_ptr Touch_Item;
 LaunchItem_ptr LaunchItem;
 Drop_Item_ptr Drop_Item;
+rp_touch_ptr rp_touch;
 G_PickTarget_ptr G_PickTarget;
 G_UseTargets_ptr G_UseTargets;
 G_StartKamikaze_ptr G_StartKamikaze;
@@ -163,6 +164,7 @@ void SearchVmFunctions(void) {
 	VM_SEARCH(Touch_Item, PTRN_TOUCH_ITEM, MASK_TOUCH_ITEM);
 	VM_SEARCH(LaunchItem, PTRN_LAUNCHITEM, MASK_LAUNCHITEM);
 	VM_SEARCH(Drop_Item, PTRN_DROP_ITEM, MASK_DROP_ITEM);
+	VM_SEARCH(rp_touch, PTRN_RP_TOUCH, MASK_RP_TOUCH);
 	VM_SEARCH(G_PickTarget, PTRN_G_PICKTARGET, MASK_G_PICKTARGET);
 	VM_SEARCH(G_UseTargets, PTRN_G_USETARGETS, MASK_G_USETARGETS);
 	VM_SEARCH(G_StartKamikaze, PTRN_G_STARTKAMIKAZE, MASK_G_STARTKAMIKAZE);
