@@ -61,6 +61,7 @@ void race_ClientSpawn(gentity_t* ent) {
 
 int hook_race_methods(void) {
 
+    int result = 0;
     spawn_table = qagame + 0x2CDFA0;
 
     // em92: uncomment to get original spawn table items
@@ -72,5 +73,5 @@ int hook_race_methods(void) {
 
     replace_spawn(57, My_SP_race_point, &SP_race_point, NULL);
 
-    return 0;
+    return result;
 }

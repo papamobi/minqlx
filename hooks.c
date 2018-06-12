@@ -339,6 +339,13 @@ void HookVm(void) {
     }
     count++;
 
+    res = hook_race_methods();
+    if (res < 0) {
+        failed = 1;
+    } else {
+        count += res;
+    }
+
 	if (failed) {
 		DebugPrint("Exiting.\n");
 		exit(1);
@@ -349,8 +356,6 @@ void HookVm(void) {
         exit(1);
     }
 #endif
-
-    hook_race_methods();
 }
 
 
