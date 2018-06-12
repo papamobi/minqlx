@@ -11,6 +11,11 @@ typedef void (__cdecl *spawn_ptr)(gentity_t *ent);
 
 spawn_ptr SP_race_point;
 
+int wait_triggers[MAX_CLIENTS][MAX_GENTITIES];
+int p_scores[MAX_CLIENTS];
+int p_pings[MAX_CLIENTS];
+int p_starttimes[MAX_CLIENTS];
+
 spawn_t* spawn_table;
 
 void __cdecl My_rp_touch( gentity_t *self, gentity_t *other, trace_t *trace ) {
