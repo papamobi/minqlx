@@ -184,6 +184,7 @@ char* __cdecl My_ClientConnect(int clientNum, qboolean firstTime, qboolean isBot
 
 void __cdecl My_ClientSpawn(gentity_t* ent) {
     ClientSpawn(ent);
+    race_ClientSpawn(ent);
     
     // Since we won't ever stop the real function from being called,
     // we trigger the event after calling the real one. This will allow

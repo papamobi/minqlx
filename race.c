@@ -43,6 +43,21 @@ int replace_spawn(int index, spawn_ptr new_method, spawn_ptr* old_method, char* 
     return 0;
 }
 
+void race_ClientSpawn(gentity_t* ent) {
+    int clientNum = ent->client->ps.clientNum;
+
+    for (int i=0; i<MAX_GENTITIES; i++)
+        wait_triggers[clientNum][i] = 0;
+    p_scores[clientNum] = 0;
+    p_pings[clientNum] = 0;
+
+    for(int i=sv_maxclients->integer; i < level->num_entities; i++) {
+        gentity_t *e = &g_entities[i];
+        if (e->inuse && e->r.ownerNum == clientNum && e->parent == ent) {
+            G_FreeEntity(e);
+        }
+    }
+}
 
 int hook_race_methods(void) {
 
