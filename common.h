@@ -35,6 +35,7 @@ typedef int32_t sint;
 
 extern int common_initialized;
 extern int cvars_initialized;
+extern module_info_t qzeroded_module;
 
 void InitializeStatic(void);
 void InitializeVm(void);

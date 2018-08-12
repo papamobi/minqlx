@@ -29,6 +29,7 @@ const char qagame_name[] = "qagamei386.so";
 // Global variables.
 int common_initialized = 0;
 int cvars_initialized = 0;
+module_info_t qzeroded_module;
 serverStatic_t* svs;
 
 Com_Printf_ptr Com_Printf;
@@ -106,6 +107,7 @@ static void SearchFunctions(void) {
 		DebugError("GetModuleInfo() returned %d.\n", __FILE__, __LINE__, __func__, res);
 		failed = 1;
 	}
+	qzeroded_module = module;
 
 	DebugPrint("Searching for necessary functions...\n");
 
