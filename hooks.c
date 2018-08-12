@@ -294,6 +294,8 @@ void HookStatic(void) {
 
 #endif
 
+    patch_static();
+
     if (failed) {
 		DebugPrint("Exiting.\n");
 		exit(1);
