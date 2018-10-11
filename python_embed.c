@@ -568,6 +568,69 @@ static PyObject* PyMinqlx_SetConfigstring(PyObject* self, PyObject* args) {
 
 /*
  * ================================================================
+ *                    get_value_from_infostring
+ * ================================================================
+*/
+
+static PyObject* PyMinqlx_GetValueFromInfostring(PyObject* self, PyObject* args) {
+    int i;
+    char* key;
+    char* o;
+    char* s;
+    char cs[MAX_INFO_STRING];
+    char pkey[MAX_INFO_STRING];
+    char value[MAX_INFO_STRING];
+
+    if (!PyArg_ParseTuple(args, "is:get_value_from_infostring", &i, &key))
+        return NULL;
+    else if (i < 0 || i > MAX_CONFIGSTRINGS) {
+        PyErr_Format(
+            PyExc_ValueError,
+            "index needs to be a number from 0 to %d.",
+            MAX_CONFIGSTRINGS
+        );
+        return NULL;
+    }
+
+    SV_GetConfigstring(i, cs, sizeof(cs));
+    s = cs;
+
+    if (*s == '\\')
+        s++;
+
+    while (1) {
+        o = pkey;
+        while (*s != '\\') {
+            if (!*s) {
+                PyErr_SetString(PyExc_KeyError, key);
+                return NULL;
+            }
+            *o++ = *s++;
+        }
+        *o = 0;
+        s++;
+
+        o = value;
+        while (*s != '\\' && *s) {
+            *o++ = *s++;
+        }
+        *o = 0;
+
+        if (!strcasecmp(key, pkey))
+            break;
+
+        if (!*s) {
+            PyErr_SetString(PyExc_KeyError, key);
+            return NULL;
+        }
+        s++;
+    }
+
+    return PyUnicode_DecodeUTF8(value, strlen(value), "ignore");
+}
+
+/*
+ * ================================================================
  *                          force_vote
  * ================================================================
 */
@@ -1708,6 +1771,8 @@ static PyMethodDef minqlxMethods[] = {
 	 "Prints text on the console. If used during an RCON command, it will be printed in the player's console."},
 	{"get_configstring", PyMinqlx_GetConfigstring, METH_VARARGS,
 	 "Get a configstring."},
+    {"get_value_from_infostring", PyMinqlx_GetValueFromInfostring, METH_VARARGS,
+     "Gets value from infostring inside given configstring."},
 	{"set_configstring", PyMinqlx_SetConfigstring, METH_VARARGS,
 	 "Sets a configstring and sends it to all the players on the server."},
 	{"force_vote", PyMinqlx_ForceVote, METH_VARARGS,
