@@ -220,6 +220,44 @@ static PyStructSequence_Desc flight_desc = {
     (sizeof(flight_fields)/sizeof(PyStructSequence_Field)) - 1
 };
 
+static int my_Info_RemoveKey(char *s, const char *key) {
+    char *start;
+    char pkey[MAX_INFO_STRING];
+    char value[MAX_INFO_STRING];
+    char *o;
+
+    while (1) {
+        start = s;
+        if (*s == '\\')
+            s++;
+
+        o = pkey;
+        while (*s != '\\') {
+            if (!*s)
+                return 0;
+            *o++ = *s++;
+        }
+        *o = 0;
+        s++;
+
+        o = value;
+        while (*s != '\\' && *s) {
+            if (!*s)
+                return 0;
+            *o++ = *s++;
+        }
+        *o = 0;
+
+        if (!strcasecmp (key, pkey)) {
+            memmove(start, s, strlen(s) + 1); // remove this part
+            return 1;
+        }
+
+        if (!*s)
+            return 0;
+    }
+}
+
 /*
  * ================================================================
  *                    player_info/players_info
@@ -627,6 +665,131 @@ static PyObject* PyMinqlx_GetValueFromInfostring(PyObject* self, PyObject* args)
     }
 
     return PyUnicode_DecodeUTF8(value, strlen(value), "ignore");
+}
+
+/*
+ * ================================================================
+ *                    set_value_into_infostring
+ * ================================================================
+*/
+
+static PyObject* PyMinqlx_SetValueIntoInfostring(PyObject* self, PyObject* args) {
+    int i;
+    char* key;
+    char* value;
+    char* s;
+    char cs[MAX_INFO_STRING];
+    char newi[MAX_INFO_STRING];
+    const char* blacklist = "\\;\"";
+
+    if (!PyArg_ParseTuple(args, "iss:set_value_into_infostring", &i, &key, &value))
+        return NULL;
+    else if (i < 0 || i > MAX_CONFIGSTRINGS) {
+        PyErr_Format(
+            PyExc_ValueError,
+            "index needs to be a number from 0 to %d.",
+            MAX_CONFIGSTRINGS
+        );
+        return NULL;
+    } else if (strlen(value) == 0) {
+        PyErr_SetString(
+            PyExc_ValueError,
+            "value must be non empty."
+        );
+        return NULL;
+    }
+
+    for(; *blacklist; ++blacklist) {
+        if (strchr(key, *blacklist)) {
+            PyErr_Format(
+                PyExc_ValueError,
+                "Can't use keys with a '%c': %s",
+                *blacklist,
+                key
+            );
+            return NULL;
+        }
+
+        if (strchr(value, *blacklist)) {
+            PyErr_Format(
+                PyExc_ValueError,
+                "Can't use value with a '%c': %s",
+                *blacklist,
+                value
+            );
+            return NULL;
+        }
+    }
+
+    SV_GetConfigstring(i, cs, sizeof(cs));
+    s = cs;
+
+    my_Info_RemoveKey(s, key);
+
+    snprintf(newi, sizeof(newi), "\\%s\\%s", key, value);
+
+    if (strlen(newi) + strlen(s) >= MAX_INFO_STRING) {
+        PyErr_SetString(PyExc_ValueError, "Info string length exceeded");
+        return NULL;
+    }
+
+    strcat(newi, s);
+    strcpy(s, newi);
+    My_SV_SetConfigstring(i, s);
+
+    Py_RETURN_NONE;
+}
+
+/*
+ * ================================================================
+ *                    remove_value_from_infostring
+ * ================================================================
+*/
+
+static PyObject* PyMinqlx_RemoveValueFromInfostring(PyObject* self, PyObject* args) {
+    int i, r;
+    char* key;
+    char* s;
+    char cs[MAX_INFO_STRING];
+    const char* blacklist = "\\;\"";
+
+    if (!PyArg_ParseTuple(args, "is:remove_value_from_infostring", &i, &key))
+        return NULL;
+    else if (i < 0 || i > MAX_CONFIGSTRINGS) {
+        PyErr_Format(
+            PyExc_ValueError,
+            "index needs to be a number from 0 to %d.",
+            MAX_CONFIGSTRINGS
+        );
+        return NULL;
+    }
+
+    for(; *blacklist; ++blacklist) {
+        if (strchr(key, *blacklist)) {
+            PyErr_Format(
+                PyExc_ValueError,
+                "Can't use keys with a '%c': %s",
+                *blacklist,
+                key
+            );
+            return NULL;
+        }
+    }
+
+    SV_GetConfigstring(i, cs, sizeof(cs));
+    s = cs;
+
+    r = my_Info_RemoveKey(s, key);
+
+    my_Info_RemoveKey(s, key);
+    if (r == 0) {
+        PyErr_SetString(PyExc_KeyError, key);
+        return NULL;
+    }
+
+    My_SV_SetConfigstring(i, s);
+
+    Py_RETURN_NONE;
 }
 
 /*
@@ -1772,7 +1935,11 @@ static PyMethodDef minqlxMethods[] = {
 	{"get_configstring", PyMinqlx_GetConfigstring, METH_VARARGS,
 	 "Get a configstring."},
     {"get_value_from_infostring", PyMinqlx_GetValueFromInfostring, METH_VARARGS,
-     "Gets value from infostring inside given configstring."},
+     "Gets value from infostring inside given configstring or userinfo."},
+    {"set_value_into_infostring", PyMinqlx_SetValueIntoInfostring, METH_VARARGS,
+     "Sets value into infostring inside given configstring or userinfo."},
+    {"remove_value_from_infostring", PyMinqlx_RemoveValueFromInfostring, METH_VARARGS,
+     "Removes value from infostring inside given configstring or userinfo."},
 	{"set_configstring", PyMinqlx_SetConfigstring, METH_VARARGS,
 	 "Sets a configstring and sends it to all the players on the server."},
 	{"force_vote", PyMinqlx_ForceVote, METH_VARARGS,
@@ -1895,6 +2062,17 @@ static PyObject* PyMinqlx_InitModule(void) {
     PyModule_AddIntMacro(module, CS_CONNECTED);
     PyModule_AddIntMacro(module, CS_PRIMED);
     PyModule_AddIntMacro(module, CS_ACTIVE);
+
+    // Configstrings.
+    PyModule_AddIntMacro(module, CS_SERVERINFO);
+    PyModule_AddIntMacro(module, CS_SYSTEMINFO);
+    PyModule_AddIntMacro(module, CS_SCORES1);
+    PyModule_AddIntMacro(module, CS_SCORES2);
+    PyModule_AddIntMacro(module, CS_VOTE_TIME);
+    PyModule_AddIntMacro(module, CS_VOTE_STRING);
+    PyModule_AddIntMacro(module, CS_VOTE_YES);
+    PyModule_AddIntMacro(module, CS_VOTE_NO);
+    PyModule_AddIntMacro(module, CS_PLAYERS);
 
     // Teams.
     PyModule_AddIntMacro(module, TEAM_FREE);
