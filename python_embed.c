@@ -1643,6 +1643,73 @@ static PyObject* PyMinqlx_DevPrintItems(PyObject* self, PyObject* args) {
 
 /*
 * ================================================================
+*                         dev_swap_spawns
+* ================================================================
+*/
+
+static PyObject* PyMinqlx_DevSwapSpawns(PyObject* self, PyObject* args) {
+    gentity_t* bluespawns[MAX_CLIENTS/2] = {0};
+    gentity_t* redspawns[MAX_CLIENTS/2] = {0};
+    gentity_t* redflag = NULL;
+    gentity_t* blueflag = NULL;
+    gentity_t* ent;
+    gitem_t* item;
+    int b = 0;
+    int r = 0;
+    char* temp;
+
+    for (int i=0; i<MAX_GENTITIES; i++) {
+        ent = &g_entities[i];
+
+        if (!ent->inuse) {
+            continue;
+        } else if (strcmp(ent->classname, "team_CTF_blueplayer") == 0) {
+            bluespawns[b++] = ent;
+        } else if (strcmp(ent->classname, "team_CTF_redplayer") == 0) {
+            redspawns[r++] = ent;
+        } else if (strcmp(ent->classname, "team_CTF_blueflag") == 0) {
+            blueflag = ent;
+        } else if (strcmp(ent->classname, "team_CTF_redflag") == 0) {
+            redflag = ent;
+        }
+    }
+
+    if (b != r) {
+        SV_SendServerCommand(NULL, "print \"ERROR: Cannot swap spawn points: not even\"");
+        Py_RETURN_NONE;
+    }
+
+    if (!blueflag) {
+        SV_SendServerCommand(NULL, "print \"ERROR: Blue flag not found\"");
+        Py_RETURN_NONE;
+    }
+
+    if (!redflag) {
+        SV_SendServerCommand(NULL, "print \"ERROR: Red flag not found\"");
+        Py_RETURN_NONE;
+    }
+
+    for (int i=0; i<b; i++) {
+        temp = bluespawns[i]->classname;
+        bluespawns[i]->classname = redspawns[i]->classname;
+        redspawns[i]->classname = temp;
+    }
+
+    item = blueflag->item;
+    blueflag->item = redflag->item;
+    redflag->item = item;
+
+    blueflag->s.modelindex = blueflag->item - bg_itemlist;
+    blueflag->classname = blueflag->item->classname;
+
+    redflag->s.modelindex = redflag->item - bg_itemlist;
+    redflag->classname = redflag->item->classname;
+
+    Py_RETURN_NONE;
+}
+
+/*
+* ================================================================
 *                         force_weapon_respawn_time
 * ================================================================
 */
@@ -1768,6 +1835,8 @@ static PyMethodDef minqlxMethods[] = {
      "Replaces target entity's item with specified one."},
     {"dev_print_items", PyMinqlx_DevPrintItems, METH_NOARGS,
      "Prints all items and entity numbers to server console."},
+    {"dev_swap_spawns", PyMinqlx_DevSwapSpawns, METH_NOARGS,
+     "temp method"},
     {"force_weapon_respawn_time", PyMinqlx_ForceWeaponRespawnTime, METH_VARARGS,
      "Force all weapons to have a specified respawn time, overriding custom map respawn times set for them."},
     {NULL, NULL, 0, NULL}
