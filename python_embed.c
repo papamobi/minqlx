@@ -1643,11 +1643,11 @@ static PyObject* PyMinqlx_DevPrintItems(PyObject* self, PyObject* args) {
 
 /*
 * ================================================================
-*                         dev_swap_spawns
+*                         swap_team_bases
 * ================================================================
 */
 
-static PyObject* PyMinqlx_DevSwapSpawns(PyObject* self, PyObject* args) {
+static PyObject* PyMinqlx_SwapTeamBases(PyObject* self, PyObject* args) {
     gentity_t* bluespawns[MAX_CLIENTS/2] = {0};
     gentity_t* redspawns[MAX_CLIENTS/2] = {0};
     gentity_t* redflag = NULL;
@@ -1676,17 +1676,17 @@ static PyObject* PyMinqlx_DevSwapSpawns(PyObject* self, PyObject* args) {
 
     if (b != r) {
         SV_SendServerCommand(NULL, "print \"ERROR: Cannot swap spawn points: not even\"");
-        Py_RETURN_NONE;
+        Py_RETURN_FALSE;
     }
 
     if (!blueflag) {
         SV_SendServerCommand(NULL, "print \"ERROR: Blue flag not found\"");
-        Py_RETURN_NONE;
+        Py_RETURN_FALSE;
     }
 
     if (!redflag) {
         SV_SendServerCommand(NULL, "print \"ERROR: Red flag not found\"");
-        Py_RETURN_NONE;
+        Py_RETURN_FALSE;
     }
 
     for (int i=0; i<b; i++) {
@@ -1705,7 +1705,7 @@ static PyObject* PyMinqlx_DevSwapSpawns(PyObject* self, PyObject* args) {
     redflag->s.modelindex = redflag->item - bg_itemlist;
     redflag->classname = redflag->item->classname;
 
-    Py_RETURN_NONE;
+    Py_RETURN_TRUE;
 }
 
 /*
@@ -1835,8 +1835,8 @@ static PyMethodDef minqlxMethods[] = {
      "Replaces target entity's item with specified one."},
     {"dev_print_items", PyMinqlx_DevPrintItems, METH_NOARGS,
      "Prints all items and entity numbers to server console."},
-    {"dev_swap_spawns", PyMinqlx_DevSwapSpawns, METH_NOARGS,
-     "temp method"},
+    {"swap_team_bases", PyMinqlx_SwapTeamBases, METH_NOARGS,
+     "Swaps initial player spawns and flag spawns."},
     {"force_weapon_respawn_time", PyMinqlx_ForceWeaponRespawnTime, METH_VARARGS,
      "Force all weapons to have a specified respawn time, overriding custom map respawn times set for them."},
     {NULL, NULL, 0, NULL}
