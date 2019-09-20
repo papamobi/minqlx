@@ -1501,6 +1501,7 @@ typedef void (__cdecl *G_InitGame_ptr)(int levelTime, int randomSeed, int restar
 typedef int (__cdecl *CheckPrivileges_ptr)(gentity_t* ent, char* cmd);
 typedef char* (__cdecl *ClientConnect_ptr)(int clientNum, qboolean firstTime, qboolean isBot);
 typedef void (__cdecl *ClientSpawn_ptr)(gentity_t* ent);
+typedef void (__cdecl *TossClientItems_ptr)(gentity_t *self);
 typedef void (__cdecl *Cmd_CallVote_f_ptr)(gentity_t *ent);
 typedef void (__cdecl *G_Damage_ptr)(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t dir, vec3_t point, int damage, int dflags, int mod);
 typedef void (__cdecl *Touch_Item_ptr)(gentity_t *ent, gentity_t *other, trace_t *trace);
@@ -1540,6 +1541,7 @@ extern CheckPrivileges_ptr CheckPrivileges;
 extern ClientConnect_ptr ClientConnect;
 extern ClientSpawn_ptr ClientSpawn;
 extern Cmd_CallVote_f_ptr Cmd_CallVote_f;
+extern TossClientItems_ptr TossClientItems;
 extern G_Damage_ptr G_Damage;
 extern Touch_Item_ptr Touch_Item;
 extern LaunchItem_ptr LaunchItem;
