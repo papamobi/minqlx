@@ -216,6 +216,11 @@ void __cdecl My_G_StartKamikaze(gentity_t* ent) {
     if (client_id != -1)
         KamikazeExplodeDispatcher(client_id, is_used_on_demand);
 }
+
+void __cdecl My_TossClientItems(gentity_t* self) {
+    PlayerItemsTossDispatcher(self - g_entities);
+    TossClientItems(self);
+}
 #endif
 
 // Hook static functions. Can be done before program even runs.
@@ -322,6 +327,12 @@ void HookVm(void) {
 		failed = 1;
 	}
   count++;
+
+    res = Hook((void*)TossClientItems, My_TossClientItems, (void*)&TossClientItems);
+    if (res) {
+        DebugPrint("ERROR: Failed to hook TossClientItems: %d\n", res);
+        failed = 1;
+    }
 
     res = Hook((void*)G_StartKamikaze, My_G_StartKamikaze, (void*)&G_StartKamikaze);
     if (res) {

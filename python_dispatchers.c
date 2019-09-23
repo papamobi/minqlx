@@ -294,3 +294,75 @@ void KamikazeExplodeDispatcher(int client_id, int is_used_on_demand) {
 
     PyGILState_Release(gstate);
 }
+
+void toss_item( gentity_t* ent, PyObject* item ) {
+    int item_id = 0;
+    int ammo = 0;
+
+    if (item == Py_None || PyBool_Check(item)) {
+        return;
+
+    } else if (PyLong_Check(item)) {
+        item_id = PyLong_AsLong(item);
+
+    } else if (PyTuple_Check(item) && PyTuple_Size(item) >= 1) {
+
+        PyObject* sub_item;
+
+        raise(2);
+        sub_item = PyTuple_GetItem(item, 0);
+        if (PyLong_Check(sub_item)) {
+            item_id = PyLong_AsLong(sub_item);
+        }
+
+        if (PyTuple_Size(item) >= 2) {
+            sub_item = PyTuple_GetItem(item, 1);
+            if (PyLong_Check(sub_item)) {
+                ammo = PyLong_AsLong(sub_item);
+            }
+        }
+
+    } else {
+        return;
+    }
+
+    if (item_id < 1 || item_id >= bg_numItems ) {
+        DebugPrint("toss_item: invalid item_id: %d\n", item_id);
+        return;
+    }
+
+    gentity_t* new_ent = Drop_Item(ent, bg_itemlist + item_id, 0);
+    if (ammo) {
+        new_ent->count = ammo;
+    }
+}
+
+void PlayerItemsTossDispatcher(int client_id) {
+    if (!player_items_toss_handler)
+        return; // No registered handler.
+
+    PyGILState_STATE gstate = PyGILState_Ensure();
+
+    PyObject* result = PyObject_CallFunction(player_items_toss_handler, "i", client_id);
+
+    // Only change to 0 if we got False returned to us.
+    if (result == NULL) {
+        DebugError("PyObject_CallFunction() returned NULL.\n",
+                __FILE__, __LINE__, __func__);
+    }
+
+    if ( PyList_Check(result) ) {
+        Py_ssize_t size = PyList_Size(result);
+
+        for (Py_ssize_t i=0; i<size; i++) {
+            toss_item( &g_entities[client_id], PyList_GetItem( result, i ) );
+        }
+
+    } else {
+      toss_item( &g_entities[client_id], result );
+    }
+
+    Py_XDECREF(result);
+
+    PyGILState_Release(gstate);
+}
