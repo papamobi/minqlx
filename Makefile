@@ -15,7 +15,7 @@ BINDIR = bin
 CC = gcc
 CFLAGS += -shared -std=gnu11
 LDFLAGS_NOPY += -ldl
-LDFLAGS += $(shell python3-config --libs)
+LDFLAGS += $(shell python3-config --libs --embed || python3-config --libs | grep lpython)
 SOURCES_NOPY += dllmain.c commands.c simple_hook.c hooks.c misc.c maps_parser.c trampoline.c patches.c
 SOURCES += dllmain.c commands.c python_embed.c python_dispatchers.c simple_hook.c hooks.c misc.c maps_parser.c trampoline.c patches.c
 OBJS = $(SOURCES:.c=.o)
@@ -34,7 +34,7 @@ all: $(OUTPUT) $(PYMODULE)
 
 debug: CFLAGS += $(shell python3-config --includes) -gdwarf-2 -Wall -O0 -fvar-tracking
 debug: VERSION := MINQLX_VERSION=\"$(shell python3 python/version.py -d)\"
-debug: $(OUTPUT)
+debug: $(OUTPUT) $(PYMODULE)
 	@echo Done!
 
 nopy: CFLAGS += -Wall -DNOPY
