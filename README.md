@@ -142,25 +142,13 @@ Since this and plugins use different repositories, they will also be updated sep
 branch of both repositories should always be compatible. If you want to try out the develop branch, make sure you use
 the develop branch of both repositories too, otherwise you might run into issues.
 
-To update the core, just use `wget` to get the latest binary tarball and put it in your QLDS directory, then simply
-extract it with `tar -xvf <tarball>`. To update the plugins, use `cd` to change the working directory to `qlds/minqlx-plugins`
+To update the core, clone this repository, compile minqlx and copy `minqlx/bin` to `qlds` directory, just
+like you did it, when following installing instructions.
+To update the plugins, use `cd` to change the working directory to `qlds/minqlx-plugins`
 and do `git pull origin` and you should be good to go. Git should not remove any untracked files, so you can have your
 own custom plugins there and still keep your local copy of the repo up to date.
 
 You can also try running [these scripts](https://gist.github.com/MinoMino/5a8c76da3edd953144ef) from your QLDS directory. It will compile the latest version from source and update plugins. The second script is the same, but using the develop branch instead.
-
-Compiling
-=========
-**NOTE**: This is *not* required if you are using binaries.
-
-It's just a makefile for now. No autoconf or anything, so you might need to edit the file in some cases.
-It assumes you have GCC and that `python3-config` is Python 3's python-config. On Debian, install
-`python3-dev` and it should compile right off the bat assuming you have all the build tools.
-
-To compile, just do a `make` and you should get a `minqlx.so` and a `minqlx.zip` in the `bin` directory.
-The `bin` directory also has launch scripts, so you can simply copy the contents of the `bin` directory
-into the QLDS folder and use those scripts to launch it. If you do not want to use this with
-Python, you can compile it with `make nopy` and you should get a `minqlx_nopy.so` instead.
 
 Contribute
 ==========
