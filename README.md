@@ -38,10 +38,10 @@ python3 --version
 earlier and then do `sudo apt-get update` again to make sure you don't install any other `stretch`
 packages unintentionally later.
 
-- Now you should get Redis and Git, which will be used by minqlx's plugins:
+- Now you should get Redis, Git and build utils which will be used by minqlx's plugins and for compiling minqlx:
 
 ```
-sudo apt-get -y install redis-server git
+sudo apt-get -y install redis-server git build-essential
 ```
 
 - Clone this repository and compile minqlx
@@ -63,7 +63,6 @@ git clone https://github.com/MinoMino/minqlx-plugins.git
 wget https://bootstrap.pypa.io/get-pip.py
 sudo python3 get-pip.py
 rm get-pip.py
-sudo apt-get -y install build-essential
 sudo python3 -m pip install -r minqlx-plugins/requirements.txt
 ```
 
