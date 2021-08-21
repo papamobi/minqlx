@@ -340,12 +340,14 @@ void HookVm(void) {
         DebugPrint("ERROR: Failed to hook Pmove: %d\n", res);
         failed = 1;
     }
+    count++;
 
     res = Hook((void*)TossClientItems, My_TossClientItems, (void*)&TossClientItems);
     if (res) {
         DebugPrint("ERROR: Failed to hook TossClientItems: %d\n", res);
         failed = 1;
     }
+    count++;
 
     res = Hook((void*)G_StartKamikaze, My_G_StartKamikaze, (void*)&G_StartKamikaze);
     if (res) {
