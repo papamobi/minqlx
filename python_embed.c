@@ -1600,6 +1600,33 @@ static PyObject* PyMinqlx_ReplaceItems(PyObject* self, PyObject* args) {
 
 /*
 * ================================================================
+*                         fix_takedamage
+* ================================================================
+*/
+
+static PyObject* PyMinqlx_FixTakedamage(PyObject* self, PyObject* args) {
+    gentity_t* ent;
+
+    for (int i=0; i<sv_maxclients->integer; i++) {
+        ent = &g_entities[i];
+
+        if (!ent->inuse)
+            continue;
+
+        if (!ent->client)
+            continue;
+
+        if (ent->health > 0 && ent->client->sess.sessionTeam != TEAM_SPECTATOR && !ent->takedamage) {
+            ent->takedamage = qtrue;
+            My_Com_Printf("Fixed takedamage for %s\n", ent->client->pers.netname);
+        }
+    }
+
+    Py_RETURN_NONE;
+}
+
+/*
+* ================================================================
 *                         dev_print_items
 * ================================================================
 */
@@ -1769,6 +1796,8 @@ static PyMethodDef minqlxMethods[] = {
      "Slay player with mean of death."},
     {"replace_items", PyMinqlx_ReplaceItems, METH_VARARGS,
      "Replaces target entity's item with specified one."},
+    {"fix_takedamage", PyMinqlx_FixTakedamage, METH_NOARGS,
+     "Fixes takedamage flag for players."},
     {"dev_print_items", PyMinqlx_DevPrintItems, METH_NOARGS,
      "Prints all items and entity numbers to server console."},
     {"force_weapon_respawn_time", PyMinqlx_ForceWeaponRespawnTime, METH_VARARGS,
