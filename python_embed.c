@@ -1617,8 +1617,9 @@ static PyObject* PyMinqlx_FixTakedamage(PyObject* self, PyObject* args) {
             continue;
 
         if (ent->health > 0 && ent->client->sess.sessionTeam != TEAM_SPECTATOR && !ent->takedamage) {
-            ent->takedamage = qtrue;
-            My_Com_Printf("Fixed takedamage for %s\n", ent->client->pers.netname);
+            SV_SendServerCommand(NULL, "print \"%s^7 was slain!\n\"\n", ent->client->pers.netname);
+            g_entities[i].health = -40;
+            G_AddEvent(ent, EV_GIB_PLAYER, ent->s.number);
         }
     }
 

@@ -9,6 +9,6 @@ class mobi_custom(minqlx.Plugin):
     def handle_player_items_toss(self, player):
         player.weapon(1)  # disable weapon droping
 
-    @minqlx.delay(0.5)
+    @minqlx.delay(0.2)
     def handle_round_start(self, *args, **kwargs):
         minqlx.fix_takedamage()
